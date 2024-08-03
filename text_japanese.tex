@@ -225,12 +225,55 @@ label	L.1
 
 \end{enumerate}
 
+\section{準備}
+
+\subsection{資料}
+
+本演習では、\href{https://github.com/tmu-compiler-info-sys-exp-I}{GitHub Organization}を通
+じて資料を提供します。\href{https://github.com/tmu-compiler-info-sys-exp-I/resume}{GitHub
+  リポジトリ}からファイルをダウンロードできるか確認してください。
+
+\subsection{環境構築}
+
+プログラミング言語に OCaml を用いるため、 OCaml のインストールが必要です。各プラットフォー
+ムごとにインストール方法を説明します。
+
+\subsubsection{macOS}
+
+\begin{enumerate}
+\item \href{https://brew.sh/ja}{Homebrew} をインストールする
+  \begin{itemize}
+  \item 出来なかったら \href{https://zenn.dev/inablog/articles/5e790c9fbdad20}{初心者向け
+      ガイド}も確認する
+  \end{itemize}
+\item \verb|brew install ocaml| を実行する
+\item ターミナル で \verb|ocaml| と打ち REPL が立ち上がるか確認
+\end{enumerate}
+
+\subsubsection{Windows}
+
+Windows では cygwin を使います。
+
+\begin{enumerate}
+
+\item \href{https://cygwin.com/}{Cygwin} にアクセスして Cygwin の setup-x86\_64.exe をダ
+  ウンロードしインストール
+  \begin{itemize}
+  \item 分からなかった場合は
+    \href{https://qiita.com/nouernet/items/271a285db517e4a25817}{Qiita} を参照
+  \end{itemize}
+\item \href{https://fdopen.github.io/opam-repository-mingw/installation/}{OCaml for
+    Windows} にアクセス
+\item \verb|64-bit| をクリックし OCaml64.exe をダウンロードしインストール
+  \begin{itemize}
+  \item 分からなかった場合は
+    \href{https://haskell.hatenablog.com/entry/How-to-install-OCaml-on-Windows}{Haskell勉
+      強会のページ}などを参照すること
+  \end{itemize}
+\item Cygwin で \verb|ocaml| と打ち REPL が立ち上がるか確認
+\end{enumerate}
+
 \section{演習}
-
-\subsection{準備}
-
-本演習では、GitHubリポジトリを通じて資料を提供します。GitHubリポジトリからファイルをダウン
-ロードできるか確認してください。
 
 \subsection{1日目: OCaml入門}
 
@@ -262,8 +305,9 @@ label	L.1
 \subsubsection{レポート}
 
 まず、自分が勉強のために記述したOCamlプログラムとその実行結果のうち、面白いと思ったプログ
-ラムを3個選んでレポートにまとめてください。また、以下のOCaml爆速入門の練習問題を解きその解
-答をレポートにまとめてください。
+ラムを3個選んでレポートにまとめてください。まとめるとき、なぜ面白いと思ったのか文章で説明
+してください。さらに、以下のOCaml爆速入門の練習問題を解きその解答をレポートにまとめてくだ
+さい。
 
 \begin{enumerate}
 \item 与えられた正整数 $n$ に対、$1^2 + 2^2 + \cdots + n^2$ を
