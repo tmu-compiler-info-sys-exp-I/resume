@@ -259,7 +259,6 @@ label	L.1
 
 さらに時間が余った場合は、2日目の内容を進めてください。
 
-
 \subsubsection{レポート}
 
 まず、自分が勉強のために記述したOCamlプログラムとその実行結果のうち、面白いと思ったプログ
@@ -278,13 +277,29 @@ label	L.1
 
 \subsection{2日目: 仮想スタック機械への簡易コンパイラの作成}
 
-2日目は、While言語から仮想スタック機械へのコンパイラを製作します。
-配布するソースコードは大部分が実装されていますが、パーサーが足し算と $<$ 以外の演算を認識
-しません。まず、引き算、かけ算、割り算、$>$、$<=$、$>=$ 、$==$ などの演算を実装してくださ
-い。また、パーサは \verb|begin| -- \verb|end| 文、そして \verb|while| 文を認識しません。
-\verb|parser.mly| と \verb|lexer.mll| を改造し、上記の文を認識できるよう改良してください。
+
+まず、コンパイラの雛形となるソースコードを
+\href{https://github.com/tmu-compiler-info-sys-exp-I/compiler-day2}{GitHub}からダウンロー
+ドできるか確認してください。
+
+2日目は、While言語から仮想スタック機械へのコンパイラを製作します。配布するソースコードは大
+部分が実装されていますが、パーサーが足し算と $<$ 以外の演算を認識しません。また、
+\verb|begin| -- \verb|end| 文 と \verb|while| 文を認識しません。
+
+\begin{description}
+\item [\fbox{課題1}] 引き算、かけ算、割り算、$>$、$<=$、$>=$ 、$==$ などの演算を実装してください。
+  具体的には、\verb|syntax.ml|、\verb|parser.mly| と \verb|lexer.mll| を改造し、上記の演算を
+  認識できるよう改良してください。
+\item [\fbox{課題2}] \verb|begin| -- \verb|end| 文 と\verb|while| 文を実装してください。
+  具体的には、\verb|syntax.ml|、\verb|parser.mly| と \verb|lexer.mll| を改造し、上記の文を
+  認識できるよう改良してください。
+\item [\fbox{課題3}] 追加した演算や文を、対応する仮想スタック命令へ翻訳するプログラムを
+  \verb|virtual_stack.ml| に実装してください。
+\end{description}
 
 具体的には、以下の手順で取り組んでください。
+
+\noindent\fbox{\textbf{課題1}}
 
 \begin{enumerate}
 \item \verb|sytax.ml| に \verb|Sub|, \verb|Div|, \verb|Mul|, \verb|EQ| などを
@@ -297,11 +312,20 @@ label	L.1
 \item \verb|lexer.mly| で定義した文字列からトークンへ翻訳するルールを定義する
 \item \verb|parser.mly| で引き算、割り算、等号などのトークンから \verb|Syntax.t| への翻訳
   を定義する
-\item \verb|virtual_stack.ml| で引き算、割り算、等号などを適切な仮想機械命令へ翻訳する
-  \begin{itemize}
-  \item \verb|Add| や \verb|LT| のパターンを真似して実装する
-  \end{itemize}
 \end{enumerate}
+
+\noindent\fbox{\textbf{課題2}}
+
+\begin{enumerate}
+\item \verb|syntax.ml| に \verb|Seq| 型、そして\verb|While| 型を追加する
+\item \verb|parser.mly| で \verb|begin| -- \verb|end|、そして \verb|while| を認識する
+  ためのトークンを定義
+\item \verb|lexer.mll| で文字列から定義したトークンへ翻訳するためのルールを定義
+\item \verb|parser.mly| でトークンから \verb|syntax.ml| で定義した \verb|Assign|,
+  \verb|Seq|, \verb|While| へ翻訳するルールを定義
+\end{enumerate}
+
+\noindent\fbox{\textbf{課題3}}
 
 認識するための改良が終わったら、仮想スタック機械へのコンパイラを実装してください。大部分が
 実装されていますが、パーサと同様に、仮想命令生成器 (\verb|virtual_stack.ml|) が代入文、
@@ -311,12 +335,10 @@ label	L.1
 具体的には、以下の手順で取り組んでください。
 
 \begin{enumerate}
-\item \verb|syntax.ml| に \verb|Seq| 型、そして\verb|While| 型を追加する
-\item \verb|parser.mly| で \verb|begin| -- \verb|end|、そして \verb|while| を認識する
-  ためのトークンを定義
-\item \verb|lexer.mll| で文字列から定義したトークンへ翻訳するためのルールを定義
-\item \verb|parser.mly| でトークンから \verb|syntax.ml| で定義した \verb|Assign|,
-  \verb|Seq|, \verb|While| へ翻訳するルールを定義
+\item \verb|virtual_stack.ml| で引き算、割り算、等号などを適切な仮想機械命令へ翻訳する
+  \begin{itemize}
+  \item \verb|Add| や \verb|LT| のパターンを真似して実装する
+  \end{itemize}
 \item \verb|virtual_stack.ml| で \verb|Seq|, \verb|While| を適切な仮想機械命令へ翻訳する
   \begin{itemize}
   \item \verb|Assign| のパターンを真似して実装する
@@ -325,29 +347,64 @@ label	L.1
 
 \subsubsection{レポート}
 
-自分が改良した内容をレポートにまとめて提出してください。レポートにする際、実行したWhile言
+自分が改良した内容をレポートにまとめて提出してください。レポートにまとめる際、実行したWhile言
 語ソースコードと実行結果を含めることが望ましい。
 
 
 \subsection{3日目: Pythonバイトコードコンパイラの作成}
 
-3日目は、2日目までに実装した仮想スタック機械コンパイラをPythonバイトコードへコンパイルしま
-す。\verb|emit_pyc.ml| と \verb|assemble_pyc.ml| を用い、Pythonバイトコードへ変換してくだ
-さい。変換の後、実際にPythonインタプリタで動かしてみましょう。具体的な手順は以下の通りです。
+まず、コンパイラの雛形となるソースコードを
+\href{https://github.com/tmu-compiler-info-sys-exp-I/compiler-day3}{GitHub}からダウンロー
+ドできるか確認してください。
 
-\begin{enumerate}
-\item \verb|./while_lang test/assign.while| と実行し \verb|test/assign.pyc| を生成する
-\item \verb|./interpret.py test/assign.pyc| と実行し結果を確認する
-\end{enumerate}
+3日目は、実装課題と調査課題の二種類があります。2日目の実装が8割以上完成している人は実装課
+題に取り組んでください。2日目の実装が間に合わなかった人は2日目の実装の続きに取り組んだ上で
+調査課題を遂行してください。どちらも取り組んだ場合は加点します。
+
+\subsubsection{\fbox{実装課題}}
+
+2日目までに実装した仮想スタック機械コンパイラをPythonバイトコードへコンパイルします。まず、
+簡単なプログラムを利用してPythonバイトコードへ変換してみましょう。\verb|emit_pyc.ml| と
+\verb|assemble_pyc.ml| を用います。\verb|assign.while| という代入を行う While 言語プログラ
+ムが用意されています。このファイルを例としたときの、Pythonバイトコードのコンパイル手順は以下の通りです。
+
+\begin{lstlisting}
+$ ./while_lang test/assign.while
+\end{lstlisting}
+
+すると、\verb|test/assign.pyc| というファイルが生成されます。この中には Pythonバイトコードの
+バイナリが含まれています。 \verb|assemble_pyc.py| で Python インタプリタで読み取れる表現
+に変換しているので、Python 2 インタプリタ (3 ではないので注意!) で実行できます。次のように
+実行してください。
+
+\begin{lstlisting}
+$ ./interpret.py test/assign.pyc
+\end{lstlisting}
+
+実行に成功すると、何らかの答えが返ってきます。
+
+\verb|emit_pyc.py| は簡単な演算や文ならコンパイルできますが、相変わらず演算をや \verb|begin| --
+\verb|end| 文が実装されていませんね。
+
+\fbox{\textbf{実装課題}}では、 \verb|emit_pyc.ml| の実装済みのコードを参考に、未実装の演算
+や文のPythonバイトコード命令への翻訳を行ってください。実装した内容をレポートにまとめて提
+出してください。
+
+\subsubsection{\fbox{調査課題}}
+
+\begin{itemize}
+\item 仮想スタックマシンの命令とPythonバイトコードの命令は、(ほぼ) 一対一に対応できます。具
+  体的に、どの命令からどの命令へ翻訳すればよいか、仮想スタック機械命令を自分で3個選び、
+  Pythonバイトコード命令への対応の仕方を説明してください。
+  \href{https://docs.python.org/ja/3/library/dis.html}{Pythonバイトコードの逆アセンブラー}
+  に Python の命令セットが書かれているので、よく読んで対応を探してください。
+\item やり残した2日目の課題に取り組んで3日目のレポートに含めて報告してください。
+\end{itemize}
 
 \subsubsection{レポート}
 
-\begin{itemize}
-\item 実際にPythonバイトコードへ変換する際、どういうルールで翻訳を行ったか説明してください。
-\item Pythonのバイトコード命令について調べてまとめてください。具体的には、Pythonのバイトコー
-  ドが約何命令存在するのか、そして、自分が興味を持った命令について調べて実際に実行した内容
-  をまとめてください。
-\end{itemize}
+実装課題か調査課題に取り組み、レポートにまとめて提出してください。レポートにまとめる際、特
+に実装課題の場合、実行したWhile言語ソースコードと実行結果を含めることが望ましい。
 
 \section{Pythonバイトコードを調べる上での資料}
 
