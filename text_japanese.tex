@@ -298,33 +298,47 @@ $ ocaml <your program name>.ml # <your program name> は任意の文字列に変
 
 すると、実行結果が表示されます。
 
-例えば、 \verb|cacl.ml| は次のように定義します。
+また、OCamlにはバイトコードコンパイラとネイティブコードコンパイラも用意されています。
+これらを使う場合は以下のコマンドを用います。
 
-\begin{lstlisting}[language=Caml]
-let () =  (* main 関数 *)
-  let x = 1 in (* 変数束縛 *)
-  print_int x  (* int 型の値 x を標準出力に print *)
+\begin{lstlisting}
+# バイトコードコンパイラを用いる場合
+$ ocamlc -o <outputname> <your program name>.ml
+
+# ネイティブコードコンパイラを用いる場合
+$ ocamlopt -o <outputname> <your program name>.ml
 \end{lstlisting}
 
-\verb|ocaml calc.ml| を実行すると、標準出力に \verb|1| が出力されます。
+その後、\verb|<outputname>| という名前で実行バイナリが生成されますので、
+\verb|./<outputname>| というコマンドで実行してください。
 
-\verb|let () = ... | はメイン関数です。メイン関数の中に書かれた式が実行されます。
+% 例えば、 \verb|cacl.ml| は次のように定義します。
 
-OCaml は、関数を \verb|let <関数名> <引数名> = <関数ボディ>| または、再帰呼出関数の場合は
-\verb|let rec <関数名> <引数名> = <関数ボディ>| と記述します。たとえば、以下のように定義し
-ます。
+% \begin{lstlisting}[language=Caml]
+% let () =  (* main 関数 *)
+%   let x = 1 in (* 変数束縛 *)
+%   print_int x  (* int 型の値 x を標準出力に print *)
+% \end{lstlisting}
 
-\begin{lstlisting}[language=Caml]
-let add_to x n =
-  x + n
+% \verb|ocaml calc.ml| を実行すると、標準出力に \verb|1| が出力されます。
 
-let rec factorial n =
-  if n <= 1 then 1
-  else n * (factorial (n - 1))
-\end{lstlisting}
+% \verb|let () = ... | はメイン関数です。メイン関数の中に書かれた式が実行されます。
 
-条件分岐は \verb|if <条件式> then <式1> else <式2>| と記述します。C言語と違い、\verb|else|
-節を省略したら unit 型の式 (値を返さない式) となります。
+% OCaml は、関数を \verb|let <関数名> <引数名> = <関数ボディ>| または、再帰呼出関数の場合は
+% \verb|let rec <関数名> <引数名> = <関数ボディ>| と記述します。たとえば、以下のように定義し
+% ます。
+
+% \begin{lstlisting}[language=Caml]
+% let add_to x n =
+%   x + n
+
+% let rec factorial n =
+%   if n <= 1 then 1
+%   else n * (factorial (n - 1))
+% \end{lstlisting}
+
+% 条件分岐は \verb|if <条件式> then <式1> else <式2>| と記述します。C言語と違い、\verb|else|
+% 節を省略したら unit 型の式 (値を返さない式) となります。
 
 \newpage
 \section{演習}
@@ -373,9 +387,9 @@ let rec factorial n =
 \begin{description}
 \item [\fbox{課題1}]
   「OCaml爆速入門 (その1、2、3)」の中で面白いと思ったプログラムを3つ選び、それぞれコード例を
-示しながら言葉でなぜ面白いと思ったか説明説明してください。
+示しながらなぜ面白いと思ったか言葉で説明してください。
 \item [\fbox{課題2}]
-  作成した電卓アプリケーションの実装と動作例をまとめてレポートとして提出してください。
+  作成した電卓アプリケーションの実装と動作例をまとめてレポートで提出してください。
 \end{description}
 
 \subsection{2日目: 仮想スタック機械への簡易コンパイラの作成}
