@@ -225,6 +225,7 @@ label	L.1
 
 \end{enumerate}
 
+\newpage
 \section{準備}
 
 \subsection{資料}
@@ -286,21 +287,58 @@ OK ですが、本演習は VS code をお勧めします。
 \href{https://code.visualstudio.com/download}{ダウンロードページ}から適切なインストーラを
 ダウンロードし展開してください。
 
-\section{OCaml入門}
+\subsection{OCamlの実行方法}
 
-\subsection{再帰関数}
+OCamlには様々な処理系が存在します。まず1番簡単な方法がインタプリタ実行する方法です。やり方
+は簡単で、プログラムを \verb|ocaml| コマンドで実行する方法です。
 
-\subsubsection{リストの再帰}
+\begin{lstlisting}
+$ ocaml <your program name>.ml # <your program name> は任意の文字列に変更
+\end{lstlisting}
 
+すると、実行結果が表示されます。
+
+例えば、 \verb|cacl.ml| は次のように定義します。
+
+\begin{lstlisting}[language=Caml]
+let () =  (* main 関数 *)
+  let x = 1 in (* 変数束縛 *)
+  print_int x  (* int 型の値 x を標準出力に print *)
+\end{lstlisting}
+
+\verb|ocaml calc.ml| を実行すると、標準出力に \verb|1| が出力されます。
+
+\verb|let () = ... | はメイン関数です。メイン関数の中に書かれた式が実行されます。
+
+OCaml は、関数を \verb|let <関数名> <引数名> = <関数ボディ>| または、再帰呼出関数の場合は
+\verb|let rec <関数名> <引数名> = <関数ボディ>| と記述します。たとえば、以下のように定義し
+ます。
+
+\begin{lstlisting}[language=Caml]
+let add_to x n =
+  x + n
+
+let rec factorial n =
+  if n <= 1 then 1
+  else n * (factorial (n - 1))
+\end{lstlisting}
+
+条件分岐は \verb|if <条件式> then <式1> else <式2>| と記述します。C言語と違い、\verb|else|
+節を省略したら unit 型の式 (値を返さない式) となります。
+
+\newpage
 \section{演習}
 
-\subsection{1日目: OCaml入門}
+\subsection{1日目: OCaml入門/レキサ・パーサジェネレータによる電卓アプリケーションの作成}
+
+\subsubsection{OCaml入門}
 
 1日目では、まずOCamlに入門します。
 「
 \href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/pl/03-ocaml.html#quick-intro-ocaml}{OCaml
-  爆速入門}」を読みながらOCamlプログラムの書き方を学びましょう。余った時間で「コンパイラI」
-を読み、コンパイラの仕組みについて理解しましょう。
+  爆速入門}」を読みながらOCamlプログラムの書き方を学びましょう。プログラムは、\verb|ocaml|
+コマンドでREPLを起動した後その中に打ち込むか、\verb|turorial.ml| というファイルに記述し、
+\verb|ocaml| コマンドを実行して結果を確認してください。
 
 \begin{enumerate}
 \item 「OCaml爆速入門」を読みながらOCamlについて勉強する。特に、以下の章を読み練習問題を解
@@ -318,39 +356,37 @@ OK ですが、本演習は VS code をお勧めします。
       OCaml爆速入門 (その3) -- 変更可能データ構造
     } の「制御構造」
   \end{itemize}
-\item \textbf{コンパイラI}（以下，テキスト）の2章「簡単な1パス コンパイラ」の2.1節から2.5
+\item (任意) \textbf{コンパイラI}（以下，テキスト）の2章「簡単な1パス コンパイラ」の2.1節から2.5
   節を読んで、コンパイラの仕組みを理解する。
 \end{enumerate}
 
-さらに時間が余った場合は、2日目の内容を進めてください。
+次に、「OCaml入門」で解説されていないが、今回のコンパイラ制作の上で必須となるリスト操作について解説します。
 
-\subsubsection{OCaml入門の補足}
+\paragraph{リスト操作}
 
-\paragraph{ヴァリアント}
+\subsubsection{レキサ・パーサジェネレータによる電卓アプリケーションの作成}
 
-\paragraph{パターンマッチ}
+OCaml に入門したら、今回のコンパイラ実装で核となるレキサ・パーサジェネレータについて学びま
+す。OCaml コンパイラには、ocamllex/ocamlyaccというレキサ・パーサジェネレータが付属します。
+今回はこれらを利用し、簡単な電卓アプリケーションを作成します。雛形は \verb|lexer.mll|、
+\verb|parser.mly|、そして\verb|calc.ml| に定義されています。
 
-\paragraph{リスト上の再帰処理}
+実装を開始する前に、まず、ocamllex/ocamlyacc入門 (\ref{intro_lex_yacc}節) を通読してくださ
+い。通読が終わったら、雛形を拡張して電卓アプリケーションを実装してください。雛形には足し算
+とかけ算が定義されていますが、引き算と割り算が定義されていません。他の実装を参考に実装して
+みましょう。
 
 \subsubsection{レポート}
 
-まず、自分が勉強のために記述したOCamlプログラムとその実行結果のうち、面白いと思ったプログ
-ラムを3個選んでレポートにまとめてください。まとめるとき、なぜ面白いと思ったのか文章で説明
-してください。さらに、以下のOCaml爆速入門の練習問題を解きその解答をレポートにまとめてくだ
-さい。
-
-\begin{enumerate}
-\item 与えられた正整数 $n$ に対、$1^2 + 2^2 + \cdots + n^2$ を
-  計算する再帰関数 \verb|square: int -> int| を定義せよ。
-  (引数 \verb|n| が負である場合の動作はどう定義してもよい。)
-\item 与えられた正整数 $n$ に対し、$n$ 番目のフィボナッチ数を計算する再帰関数 \verb|fib : int -> int| を定義せよ。
-  (引数 \verb|n| が負である場合の動作はどう定義してもよい。)
-\item 一品が菜食主義者でも食べられるかどうかを判定する関数 \verb|isVeggieDish : dish -> bool| を定義せよ．
-\item 定食が菜食主義者でも食べられるかどうかを判定する再帰関数 \verb|isVeggieMenu : menu -> bool| を定義せよ．
-\end{enumerate}
+\begin{description}
+\item [\fbox{課題1}]
+  「OCaml爆速入門 (その1、2、3)」の中で面白いと思ったプログラムを3つ選び、それぞれコード例を
+示しながら言葉でなぜ面白いと思ったか説明説明してください。
+\item [\fbox{課題2}]
+  作成した電卓アプリケーションの実装と動作例をまとめてレポートとして提出してください。
+\end{description}
 
 \subsection{2日目: 仮想スタック機械への簡易コンパイラの作成}
-
 
 まず、コンパイラの雛形となるソースコードを
 \href{https://github.com/tmu-compiler-info-sys-exp-I/compiler-day2}{GitHub}からダウンロー
@@ -480,6 +516,189 @@ $ ./interpret.py test/assign.pyc
 実装課題か調査課題に取り組み、レポートにまとめて提出してください。レポートにまとめる際、特
 に実装課題の場合、実行したWhile言語ソースコードと実行結果を含めることが望ましい。
 
+\newpage
+\section{ocamllex/ocamlyacc入門}
+\label{intro_lex_yacc}
+
+\subsection{ocamllexについて}
+
+\verb|ocamllex| は、正規表現の集合と、それに対応するセマンティクスから字句解析器を生
+成します。入力ファイルが \verb|lexer.mll| であるとき、以下のようにして字句解析器の OCaml
+コードファ イル \verb|lexer.ml| を生成することができます。
+
+\begin{lstlisting}
+    ocamllex lexer.mll
+\end{lstlisting}
+
+このファイルでは字句解析器の定義で、エントリーポイントあたり 1 つの関数が定義されています。
+それぞれの関数名はエントリーポイントの名前と同じです。それぞれの字句解析関数は字句解析バッ
+ファを引数に取り、それぞれ関連付けられたエントリーポインントの文法属性を返します。
+
+字句解析バッファは標準ライブラリ Lexing モジュール内で抽象データ型 (abstract data type) と
+して実装されています。\verb|Lexing.from_channel| 、\verb|Lexing.from_string| 、
+\verb|Lexing.from_function| はそれぞれ入力チャンネル、文字列、読み込み関数を読んで、字句解
+析バッファを返します
+
+使用する際は \verb|ocamlyacc| で生成されるパーザと結合して、構文解析器で定義されている型
+\verb|token| に属する値をセマンティクスに基づいて計算します (\verb|ocamlyacc| については後
+述) 。
+
+\subsubsection{字句解析の定義の記述法}
+
+字句解析の定義の記述法は以下の通りです。
+
+\begin{lstlisting}[language=Caml]
+{ header }
+let ident = regexp ...
+rule entrypoint =
+  parse regexp { action }
+      | ...
+      | regexp { action }
+and entrypoint =
+  parse ...
+and ...
+{ trailer }
+\end{lstlisting}
+
+header と trailer は省略可能です。
+
+\subsubsection{正規表現の記述法}
+
+regext (正規表現は) 次の文法で定義します。
+
+\begin{description}
+\item [\texttt{' char '}] 文字定数。OCaml の文字定数と同じ文法です。その文字とマッチします。
+\item [\texttt{\_}] (アンダースコア) どんな文字とでもマッチします。
+\item [\texttt{eof}] 入力終端にマッチします。警告: システムによっては対話式入力において、
+  end-of-file のあとにさらに文字列が続く場合がありますが、ocamllex では eof の後に何かが続
+  く正規表現を正しく扱うことは出来ません。
+\item [\texttt{" string "}]: 文字列定数。OCaml の文字列定数と同じ文法です。文字列にマッチします。
+\item [\texttt{[ character-set ]}] 指定された文字集合に属する 1 文字とマッチします。有効な文字集
+  合は、文字定数 1 つの ' c ' 、文字幅 ' c1 ' - '  c2 ' (c1 と c2 自身を含むその間の文字す
+  べて) 、または 2 つ以上の文字集合を結合したもののどれかです。
+\item [\texttt{[ \^ character-set ]}] 指定された文字集合に属さない 1 文字とマッチします。
+\item [\texttt{regexp *}] (反復) regexp とマッチする文字列が 0 個以上連なった文字列にマッ
+  チします。
+\item [\texttt{regexp +}] (厳しい反復) regexp とマッチする文字列が 1 個以上連なった文字列
+  にマッチします。
+\item [\texttt{regexp ?}] (オプション) 空文字列か、regexp とマッチする文字列にマッチします。
+\item [\texttt{regexp1 | regexp2}] (どちらか) regexp1 にマッチする文字列か、 regexp2 にマッ
+  チする文字列のどちらかにマッチします。
+\item [\texttt{regexp1 regexp2}] (結合) regexp1 にマッチする文字列のあとに regexp2 にマッ
+  チする文字列を結合した文字列にマッチします。
+\item [\texttt{ (regexp) }] regexp と同じです。
+\item [\texttt{ident}] 前もって \verb|let ident =  regexp| で定義された ident に割り当てら
+  れている正規表現になります。演算子の優先順位は、* と + が最優先、次に ? 、次に結合、最後
+  に | になります。
+\end{description}
+
+\subsubsection{Actionの記述法 (2日目以降に使用します)}
+
+action は OCaml の任意な式です。これらの式は lexbuf 識別子に現在の字句解析バッファが割り当
+てられた環境で評価されます。lexbuf の主な利用法を、Lexing 標準ライブラリモジュールの字句解
+析バッファ処理関数と関連付けながら以下に示します。
+
+\begin{description}
+\item [\texttt{Lexing.lexeme lexbuf}]
+  マッチした文字列を返します。
+\item [\texttt{Lexing.lexeme\_char lexbuf n}]
+  マッチした文字列の n 番目の文字を返します。最初の文字は n = 0 になります。
+\item [\texttt{Lexing.lexeme\_start lexbuf}]
+  マッチした文字列の先頭文字が入力文字列全体において何番目の文字であるかを返します。入力文字列の先頭は 0 です。
+\item [\texttt{Lexing.lexeme\_end lexbuf}]
+  マッチした文字列の終端文字が入力文字列全体において何番目の文字であるかを返します。入力文字列の先頭は 0 です。
+\item [\texttt{entrypoint lexbuf}]
+  (entrypoint には、同じ字句解析器の定義内にある別のエントリーポイント名が入ります) 字句解
+  析器の指定されたエントリーポイントを再帰的に呼びます。入れ子のコメントなどの字句解析に便
+  利です。
+\end{description}
+
+\subsection{ocamlyaccについて}
+
+ocamlyacc は、文脈自由文法の記述とそれに対応するセマンティクスから構
+文解析器を生成します。入力ファイルが \verb|parser.mly|  であるとき、以下のようにして構文解
+析器の Caml コードファイル \verb|parser.ml| とそのインターフェイスファイル
+\verb|parser.mli|  を生成することができます (今回はインターフェイスファイルについての説明
+は省略する)。
+
+\begin{lstlisting}
+    ocamlyacc parser.mly
+\end{lstlisting}
+
+生成されたモジュールには文法で、エントリーポイントあたり 1 つの関数が定義されています。そ
+れぞれの関数名はエントリーポイントの名前と同じです。構文解析関数は字句解析器と字句解析バッ
+ファをとり、対応するエントリーポイントの意味属性を返します。字句解析関数は普通、字句解析
+記述から \verb|ocamllex| プログラムによって作られたものを用います。字句解析バッファは標準
+ライブラリ \verb|Lexing| モジュール内で抽象データ型 (abstract data type) として実装されて
+います。トークンは \verb|ocamlyacc| が生成するインターフェイスファイル \verb|parser.mli|
+内で定義されている型 \verb|token| の値です。
+
+\subsubsection{構文解析定義の記述法}
+
+文法定義は以下のようなフォーマットになります。
+
+\begin{lstlisting}
+%{
+  header
+%}
+  declarations
+%%
+  rules
+%%
+  trailer
+\end{lstlisting}
+
+header と trailer は省略可能です。
+
+\subsubsection{declaration (宣言) の記述法}
+
+宣言は行単位で与えます。すべて \% で始めます。
+
+\begin{description}
+\item [\texttt{\%token symbol ...  symbol}]
+  指定されたシンボルをトークン (終端シンボル) として定義します。これらのシンボルは型 token
+  に定数コンストラクタとして追加されます。
+\item [\texttt{\%token < type >  symbol ...  symbol}]
+  指定されたシンボルを、指定された型の属性を持つトークンとして定義します。これらのシンボル
+  は、指定された型を引数に取るコンストラクタとして型 token に追加されます。type は OCaml の
+  任意な型を置くことが出来ます。
+\item[\texttt{\%start symbol ...  symbol}]
+  指定されたシンボルを文法のエントリーポイントとして定義します。それぞれのエントリーポイント
+  は、同名の構文解析関数として出力モジュールに定義されます。エントリーポイントとして定義され
+  ない非終端記号は構文解析関数を持ちません。初期シンボルは以下の \%type 指示語を用いて型を指
+  定する必要があります。
+\item[\texttt{\%left symbol ...  symbol}]
+\item[\texttt{\%right symbol ...  symbol}]
+\item[\texttt{\%nonassoc symbol ...  symbol}]
+  指定されたシンボルの優先度や関連性を指定します。同じ行にあるシンボルはすべて同じ優先度に
+  なります。この行は、すでに現れていた \%left 、\%right 、\%nonassoc 行のシンボルより高い
+  優先度を、この行より後に現れた \%left 、\%right 、\%nonassoc 行のシンボルより低い優先度
+  を持ちます。シンボルは \%left では左に、\%right では右に関連付けられます。\%nonassoc で
+  は関連付けられません。主にシンボルはトークンですが、ダミーの非終端記号を指定することも出
+  来ます。これは rules 内において \%prec 指示語を用いることで指定できます。
+\end{description}
+
+\subsubsection{rules (ルール) の記述法}
+
+rules の文法は次のようになります。
+
+\begin{lstlisting}
+nonterminal :
+    symbol ... symbol { semantic-action }
+  | ...
+  | symbol ... symbol { semantic-action }
+;
+\end{lstlisting}
+
+rules では \%prec symbol 指示語を置くことで、デフォルトの優先度と関連性を、指定されたシン
+ボルのものに上書き出来ます。
+
+semantic-action は任意の OCaml の式です。この式は定義される非終端記号に対応するセマンティク
+ス属性を生成するために評価されます。semantic-action ではシンボルのセマンティクス属性に \$
+(数字) でアクセス出来ます。\$1 で第一シンボル (もっとも左) の属性に、\$2 で第二シンボルに、
+という具合です。
+
+\newpage
 \section{Pythonバイトコードを調べる上での資料}
 
 \begin{itemize}
@@ -487,13 +706,19 @@ $ ./interpret.py test/assign.pyc
 \item 「\href{https://github.com/python/cpython/blob/main/Include/opcode_ids.h}{opcode\_ids.h}」、CPython
 \end{itemize}
 
+
+
 \section{参考文献}
 
 \begin{enumerate}
 \item 「\href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/pl/03-ocaml.pdf}{OCaml爆
     速入門 (2021年度「プログラミング言語」配布資料 (3))}」、五十嵐淳、2021
   年
-\item 「\href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/isle4-11w/mltext.pdf}{Objective Caml入門}」、五十嵐淳、2007年
+\item
+  「\href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/isle4-11w/mltext.pdf}{Objective Caml入門}」、五十嵐淳、2007年
+\item 「\href{https://ocaml.jp/archive/ocaml-manual-3.06-ja/manual026.html}{Chapter 12:
+    Lexer and parser generators (ocamllex, ocamlyacc)}」、OCaml 公式ドキュメント、2024年8
+  月閲覧
 \end{enumerate}
 
 \end{document}
