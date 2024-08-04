@@ -351,6 +351,8 @@ $ ocamlopt -o <outputname> <your program name>.ml
 コマンドでREPLを起動した後その中に打ち込むか、\verb|turorial.ml| というファイルに記述し、
 \verb|ocaml| コマンドを実行して結果を確認してください。
 
+具体的には、以下の内容に取り組んでください。
+
 \begin{enumerate}
 \item 「OCaml爆速入門」を読みながらOCamlについて勉強する。特に、以下の章を読み練習問題を解
   く。
@@ -371,16 +373,19 @@ $ ocamlopt -o <outputname> <your program name>.ml
 
 \subsection{1日目: レキサ・パーサジェネレータによる電卓アプリケーションの作成}
 
-1日目では、まずOCamlの解説を行います。次に、
-今回のコンパイラ実装で核となるレキサ・パーサジェネレータについて学びま
+
+1日目では、まずOCamlの解説を行います。次に、簡単にコンパイラの仕組みについて解説します。
+その後、今回のコンパイラ実装演習で核となるレキサ・パーサジェネレータについて学びま
 す。OCaml コンパイラには、ocamllex/ocamlyaccというレキサ・パーサジェネレータが付属します。
 今回はこれらを利用し、簡単な電卓アプリケーションを作成します。雛形は \verb|lexer.mll|、
 \verb|parser.mly|、そして\verb|calc.ml| に定義されています。
 
-実装を開始する前に、まず、ocamllex/ocamlyacc入門 (\ref{intro_lex_yacc}節) を通読してくださ
-い。通読が終わったら、雛形を拡張して電卓アプリケーションを実装してください。雛形には足し算
-とかけ算が定義されていますが、引き算と割り算が定義されていません。他の実装を参考に実装して
-みましょう。
+実装を開始する前に、まず、
+\href{https://github.com/tmu-compiler-info-sys-exp-I/compiler-day1}{GitHub リポジトリ}から
+ソースコードをダウンロードしてください。次に、ocamllex/ocamlyacc入門 (\ref{intro_lex_yacc}
+節) を通読してください。通読が終わったら、雛形を拡張して電卓アプリケーションを実装してくだ
+さい。雛形には足し算とかけ算が定義されていますが、引き算と割り算が定義されていません。他の
+実装を参考に実装してみましょう。
 
 \subsubsection{レポート}
 
