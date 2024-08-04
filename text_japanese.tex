@@ -329,12 +329,9 @@ let rec factorial n =
 \newpage
 \section{演習}
 
-\subsection{1日目: OCaml入門/レキサ・パーサジェネレータによる電卓アプリケーションの作成}
+\subsection{予習: OCaml入門}
 
-\subsubsection{OCaml入門}
-
-1日目では、まずOCamlに入門します。
-「
+演習に臨む前に、OCamlに入門しましょう。「
 \href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/pl/03-ocaml.html#quick-intro-ocaml}{OCaml
   爆速入門}」を読みながらOCamlプログラムの書き方を学びましょう。プログラムは、\verb|ocaml|
 コマンドでREPLを起動した後その中に打ち込むか、\verb|turorial.ml| というファイルに記述し、
@@ -356,17 +353,12 @@ let rec factorial n =
       OCaml爆速入門 (その3) -- 変更可能データ構造
     } の「制御構造」
   \end{itemize}
-\item (任意) \textbf{コンパイラI}（以下，テキスト）の2章「簡単な1パス コンパイラ」の2.1節から2.5
-  節を読んで、コンパイラの仕組みを理解する。
 \end{enumerate}
 
-次に、「OCaml入門」で解説されていないが、今回のコンパイラ制作の上で必須となるリスト操作について解説します。
+\subsection{1日目: レキサ・パーサジェネレータによる電卓アプリケーションの作成}
 
-\paragraph{リスト操作}
-
-\subsubsection{レキサ・パーサジェネレータによる電卓アプリケーションの作成}
-
-OCaml に入門したら、今回のコンパイラ実装で核となるレキサ・パーサジェネレータについて学びま
+1日目では、まずOCamlの解説を行います。次に、
+今回のコンパイラ実装で核となるレキサ・パーサジェネレータについて学びま
 す。OCaml コンパイラには、ocamllex/ocamlyaccというレキサ・パーサジェネレータが付属します。
 今回はこれらを利用し、簡単な電卓アプリケーションを作成します。雛形は \verb|lexer.mll|、
 \verb|parser.mly|、そして\verb|calc.ml| に定義されています。
