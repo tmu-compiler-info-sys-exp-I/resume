@@ -21,6 +21,10 @@
 
 \lstset{
   basicstyle=\ttfamily\small,
+  numbers=left,
+  numberstyle=\small,
+  numbersep=8pt,
+  frame=shadowbox
 }
 
 %\pagestyle{empty}
@@ -236,10 +240,29 @@ label	L.1
 
 \subsection{環境構築}
 
+\subsubsection{仮想開発環境のインストール}
+\label{sec:virtual_machine}
+
+本演習では、OCamlやエディタが既にインストールされた仮想開発環境を用意しています。
+OS は Ubuntu 24.04 LTS (Long-Term Support) です。
+
+まず、Oracle VirtualBox を手元のマシンにインストールします。
+この\href{https://www.virtualbox.org/wiki/Downloads}{リンク}からダウンロードページへ行き、
+手元のマシンの OS (macOSやWindowd) に対応するバージョンをインストールしてください。
+
+インストールが終わったら、\href{https://www.virtualbox.org/wiki/Downloads}{Box}から
+Ubuntu.ova をダウンロードしてください。
+起動が終わったら、VirtualBox に Ubuntu.ova を読み込みます。「仮想アプライアンスのインポー
+ト」を押し、Ubuntu.ovaを選択したあと、「開く」、「次へ」をクリックしてください。
+案内に従っていけば仮想マシンを構築できます。
+
+詳しい案内は大阪教育大学の\href{http://mugen.cc.osaka-kyoiku.ac.jp/OS/import_ova.pdf}{説明
+  資料}を参照してください。
+
 \subsubsection{OCamlのインストール}
 
-プログラミング言語に OCaml を用いるため、 OCaml のインストールが必要です。各プラットフォー
-ムごとにインストール方法を説明します。
+プログラミング言語に OCaml を用いるため、 OCaml のインストールが必要です。
+各プラットフォームごとにインストール方法を説明します。
 
 \paragraph{macOS}
 
@@ -257,26 +280,10 @@ macOS ではターミナルを使用します。
 
 \paragraph{Windows}
 
-Windows では cygwin を使います。
+演習室では特別な設定は必要ありません。
 
-\begin{enumerate}
-
-\item \href{https://cygwin.com/}{Cygwin} にアクセスして Cygwin の setup-x86\_64.exe をダ
-  ウンロードしインストール
-  \begin{itemize}
-  \item 分からなかった場合は
-    \href{https://qiita.com/nouernet/items/271a285db517e4a25817}{Qiita} を参照
-  \end{itemize}
-\item \href{https://fdopen.github.io/opam-repository-mingw/installation/}{OCaml for
-    Windows} にアクセス
-\item \verb|64-bit| をクリックし OCaml64.exe をダウンロードしインストール
-  \begin{itemize}
-  \item 分からなかった場合は
-    \href{https://haskell.hatenablog.com/entry/How-to-install-OCaml-on-Windows}{Haskell勉
-      強会のページ}などを参照すること
-  \end{itemize}
-\item Cygwin で \verb|ocaml| と打ち REPL が立ち上がるか確認
-\end{enumerate}
+お手元のWindowsマシンでは第~\ref{sec:virtual_machine}章で説明したVirtualBox を利用した方法を活用
+してください。
 
 \subsubsection{Visual Studio Code のインストール}
 
@@ -397,6 +404,24 @@ $ ocamlopt -o <outputname> <your program name>.ml
   作成した電卓アプリケーションの実装と動作例をまとめてレポートで提出してください。
 \end{description}
 
+\subsubsection{演習室での実行方法}
+
+演習室の環境では、一般的な実行方法とはやり方が異なります。以下に簡単に整理します。
+コマンドプロンプト上で実行してください。
+
+\begin{lstlisting}
+cd compiler-day1
+
+# プロジェクトのビルド
+.\bin\build.bat
+
+# 中間ファイルの消去
+.\bin\clean.bat
+
+# バイナリの実行
+.\bin\run.bat .\calc
+\end{lstlisting}
+
 \subsection{2日目: 仮想スタック機械への簡易コンパイラの作成}
 
 まず、コンパイラの雛形となるソースコードを
@@ -471,6 +496,23 @@ $ ocamlopt -o <outputname> <your program name>.ml
 自分が改良した内容をレポートにまとめて提出してください。レポートにまとめる際、実行したWhile言
 語ソースコードと実行結果を含めることが望ましい。
 
+\subsubsection{演習室での実行方法}
+
+演習室の環境では、一般的な実行方法とはやり方が異なります。以下に簡単に整理します。
+コマンドプロンプト上で実行してください。
+
+\begin{lstlisting}
+cd compiler-day2
+
+# プロジェクトのビルド
+.\bin\build.bat
+
+# 中間ファイルの消去
+.\bin\clean.bat
+
+# バイナリの実行
+.\bin\run.bat .\while_lang <path-to-while-lang-file>
+\end{lstlisting}
 
 \subsection{3日目: Pythonバイトコードコンパイラの作成}
 
@@ -526,6 +568,24 @@ $ ./interpret.py test/assign.pyc
 
 実装課題か調査課題に取り組み、レポートにまとめて提出してください。レポートにまとめる際、特
 に実装課題の場合、実行したWhile言語ソースコードと実行結果を含めることが望ましい。
+
+\subsubsection{演習室での実行方法}
+
+演習室の環境では、一般的な実行方法とはやり方が異なります。以下に簡単に整理します。
+コマンドプロンプト上で実行してください。
+
+\begin{lstlisting}
+cd compiler-day3
+
+# プロジェクトのビルド
+.\bin\build.bat
+
+# 中間ファイルの消去
+.\bin\clean.bat
+
+# バイナリの実行
+.\bin\run.bat .\while_lang <path-to-while-lang-file>
+\end{lstlisting}
 
 \newpage
 \section{ocamllex/ocamlyacc入門}
