@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{jsarticle}
+\documentclass[a4paper,11pt]{jarticle}
 %\usepackage{latexsym}
 %\usepackage{epsfig}
 \usepackage[dvipdfmx]{graphicx}
@@ -258,8 +258,12 @@ Ubuntu.ova をダウンロードしてください。
 ト」を押し、Ubuntu.ovaを選択したあと、「開く」、「次へ」をクリックしてください。
 案内に従っていけば仮想マシンを構築できます。
 
-詳しい案内は大阪教育大学の\href{http://mugen.cc.osaka-kyoiku.ac.jp/OS/import_ova.pdf}{説明
-  資料}を参照してください。
+仮想開発環境は以下のIDとパスワードを設定しています：
+
+\begin{itemize}
+\item User: eecs-compiler
+\item Password: eecs-compiler
+\end{itemize}
 
 \subsubsection{OCamlのインストール}
 
@@ -301,11 +305,13 @@ OK ですが、本演習は VS code をお勧めします。
 OCamlには様々な処理系が存在します。まず1番簡単な方法がインタプリタ実行する方法です。やり方
 は簡単で、プログラムを \verb|ocaml| コマンドで実行する方法です。
 
+\paragraph*{仮想開発環境，手元での開発環境の場合}
+
+仮想のコマンドをターミナルに入力することで OCaml プログラムを実行できます．
+
 \begin{lstlisting}
 $ ocaml <your program name>.ml # <your program name> は任意の文字列に変更
 \end{lstlisting}
-
-すると、実行結果が表示されます。
 
 また、OCamlにはバイトコードコンパイラとネイティブコードコンパイラも用意されています。
 これらを使う場合は以下のコマンドを用います。
@@ -320,6 +326,29 @@ $ ocamlopt -o <outputname> <your program name>.ml
 
 その後、\verb|<outputname>| という名前で実行バイナリが生成されますので、
 \verb|./<outputname>| というコマンドで実行してください。
+
+\paragraph*{仮想開発環境，手元での開発環境の場合}
+
+コマンドプロンプトを起動し，\verb|compiler-dayX| (X は 1,2,3 のどれか) に移動したあと，
+まず \verb|setup.bat| を実行してください．実行は1度だけでOKです．\verb|win64ocaml| というリポジトリをダウンロードします．
+
+\begin{lstlisting}
+> .\bin\setup.bat
+\end{lstlisting}
+
+実行が終了したら，次のコマンドを実行してください．
+
+\begin{lstlisting}
+> .\bin\run.bat .\win64ocaml\bin\ocaml.exe <your program name>.ml
+\end{lstlisting}
+
+バイトコードコンパラとネイティブコードコンパイラは次のコマンドで実行してください．
+
+\begin{lstlisting}
+> .\bin\run.bat .\win64ocaml\bin\ocamlc.byte.exe <your program name>.ml
+
+> .\bin\run.bat .\win64ocaml\bin\ocamlopt.byte.exe <your program name>.ml
+\end{lstlisting}
 
 % 例えば、 \verb|cacl.ml| は次のように定義します。
 
@@ -354,7 +383,8 @@ $ ocamlopt -o <outputname> <your program name>.ml
 
 \subsection{予習: OCaml入門}
 
-演習に臨む前に、OCamlに入門しましょう。「
+演習に臨む前に、OCamlに入門しましょう。まず，授業配布スライド「OCaml Crash Course」を読み，内容を一通りターミナルに打ち込んで感覚を掴んでください．余裕があれば，
+「
 \href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/pl/03-ocaml.html#quick-intro-ocaml}{OCaml
   爆速入門}」を読みながらOCamlプログラムの書き方を学びましょう。プログラムは、\verb|ocaml|
 コマンドでREPLを起動した後その中に打ち込むか、\verb|turorial.ml| というファイルに記述し、
@@ -383,8 +413,9 @@ $ ocamlopt -o <outputname> <your program name>.ml
 \subsection{1日目: レキサ・パーサジェネレータによる電卓アプリケーションの作成}
 
 
-1日目では、まずOCamlの解説を行います。次に、簡単にコンパイラの仕組みについて解説します。
-その後、今回のコンパイラ実装演習で核となるレキサ・パーサジェネレータについて学びま
+1日目では、まずOCamlの解説を行います。「OCaml Crash Course」を実演します．次に、簡単にコン
+パイラの仕組みについて解説します ．
+その後，今回のコンパイラ実装演習で核となるレキサ・パーサジェネレータについて学びま
 す。OCaml コンパイラには、ocamllex/ocamlyaccというレキサ・パーサジェネレータが付属します。
 今回はこれらを利用し、簡単な電卓アプリケーションを作成します。雛形は \verb|lexer.mll|、
 \verb|parser.mly|、そして\verb|calc.ml| に定義されています。
