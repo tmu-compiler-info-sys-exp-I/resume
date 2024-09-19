@@ -572,8 +572,8 @@ cd compiler-day2
 
 2日目までに実装した仮想スタック機械コンパイラをPythonバイトコードへコンパイルします。まず、
 簡単なプログラムを利用してPythonバイトコードへ変換してみましょう。\verb|emit_pyc.ml| と
-\verb|assemble_pyc.ml| を用います。\verb|assign.while| という代入を行う While 言語プログラ
-ムが用意されています。このファイルを例としたときの、Pythonバイトコードのコンパイル手順は以下の通りです。
+\verb|assemble_pyc.ml| を用います。予め用意された \verb|assign.while| という While 言語プログラ
+ムを例としたときの、Pythonバイトコードのコンパイル手順は以下の通りです。
 
 \begin{lstlisting}
 $ ./while_lang test/assign.while
@@ -590,21 +590,26 @@ $ ./interpret.py test/assign.pyc
 
 実行に成功すると、何らかの答えが返ってきます。
 
-\verb|emit_pyc.py| は簡単な演算や文ならコンパイルできますが、相変わらず演算をや \verb|begin| --
-\verb|end| 文が実装されていませんね。
-
 \fbox{\textbf{実装課題}}では、 \verb|emit_pyc.ml| の実装済みのコードを参考に、未実装の演算
-や文のPythonバイトコード命令への翻訳を行ってください。実装した内容をレポートにまとめて提
+や文のPythonバイトコード命令への翻訳を行ってください。
+\verb|emit_pyc.py| は簡単な演算や文ならコンパイルできますが、相変わらず演算をや \verb|begin| --
+\verb|end| 文が実装されていないので、それらを実装してください。実装した内容をレポートにまとめて提
 出してください。
 
 \subsubsection{\fbox{調査課題}}
 
 \begin{itemize}
 \item 仮想スタックマシンの命令とPythonバイトコードの命令は、(ほぼ) 一対一に対応付けることができます。具
-  体的に、どの命令からどの命令へ翻訳すればよいか、仮想スタック機械命令を自分で3個選び、
-  Pythonバイトコード命令への対応の仕方を説明してください。
-  \href{https://docs.python.org/ja/3/library/dis.html}{Pythonバイトコードの逆アセンブラー}
+  体的に、どの命令からどの命令へ翻訳すればよいか、\underline{次の3つ}に対し While言語
+  の仮想スタックマシン命令とPythonバイトコード命令への対応の仕方を説明してください。
+  \href{https://docs.python.org/ja/2.7/library/dis.html}{Pythonバイトコードの逆アセンブラ}
   に Python の命令セットが書かれているので、よく読んで対応を探してください。
+  \begin{itemize}
+  \item \verb|BINARY| で始まる二項演算命令
+  \item \verb|STORE| あるいは \verb|LOAD| で始まる値の格納・読込命令
+  \item \verb|SETUP_LOOP|、\verb|JUMP_ABSOLUTE|、\verb|POP_JUMP_IF_FALSE|、
+    \verb|COMPARE_OP|、\verb|POP_BLOCK| 命令を用いるループ構造
+  \end{itemize}
 \item やり残した2日目の課題に取り組んで3日目のレポートに含めて報告してください。
 \end{itemize}
 
