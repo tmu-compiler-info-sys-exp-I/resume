@@ -37,12 +37,10 @@
 \maketitle
 
 \section{実験目的}
-コンパイラとは、ある言語で書かれたソースコードを読み込んで、コンピュータが実行できる機械語
-に翻訳するプログラムです。多くの場合、高級言語と呼ばれるC言語やPascalなど人間が理解しやす
-い言語で記述されたソースコードをCPU（中央演算処理装置）が実行できる命令コードに変換するプ
-ログラムを指します。コンパイラの開発はむづかしいですが、これまでの研究開 発の中から多くの
-体系的な開発手法が提案されています。本実験では、簡単なコンパイラを作成して、開発手法の基本
-を学びます。
+本実験では、コンパイラの実装を通してある程度複雑なソフトウェアの実装手法を体験します。
+コンパイラは愚直に実装しようとすると大変ですが、これまで多くの実装手法が研究・開発されてきました。
+具体的には、While 言語という、制御構造として繰り返し構造のみを持った言語のコンパイラを実装
+し、その開発手法の一旦を垣間見ることがきます。
 
 % 図~\ref{phase}にコンパイル処理の流れを示します。\framebox[1cm][l]{　}で囲まれた各フェーズ
 % の具体的な処理については、\ref{text}節に示したテキスト「\textbf{コンパイラI}」と
@@ -69,20 +67,62 @@ OCaml については、五十嵐淳教授 (京都大学) の「OCaml爆速入�
 ください。最初の授業でも解説します。
 
 \begin{description}
-  \item[OCaml爆速入門]
-    「\href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/pl/03-ocaml.html}{OCaml爆速
-      入門}」、五十嵐淳、2019年
-  \item[コンパイラI] 「コンパイラ I 言語・技法・ツール」，A.V.エイホ他著，サイエンス社，1990年
-  \item[コンパイラII] 「コンパイラ II 言語・技法・ツール」，A.V.エイホ他著，サイエンス社，1990年
-  \item[Pascal] 「Pascal」，K.イェンゼン他著，培風館，1993年
+\item[OCaml爆速入門]
+  「\href{https://www.fos.kuis.kyoto-u.ac.jp/~igarashi/class/pl/03-ocaml.html}{OCaml爆速
+    入門}」、五十嵐淳、2019年
+\item[コンパイラI] 「コンパイラ I 言語・技法・ツール」，A.V.エイホ他著，サイエンス社，1990年
+\item[コンパイラII] 「コンパイラ II 言語・技法・ツール」，A.V.エイホ他著，サイエンス社，1990年
+\item[Pascal] 「Pascal」，K.イェンゼン他著，培風館，1993年
 \end{description}
 
-\section{ソース言語とスタック機械の仕様}
+\section{コンパイラ}
+\label{sec:compiler}
 
-\subsection{ソース言語の仕様}
+コンパイラとは、ある言語で書かれたソースコードを読み込んで、コンピュータが実行できる機械語
+に翻訳するプログラムです。多くの場合、高級言語と呼ばれるC言語やPascalなど人間が理解しやす
+い言語で記述されたソースコードをCPU（中央演算処理装置）が実行できる命令コードに変換するプ
+ログラムを指します。
+
+具体的には、コンパイラはユーザによって書かれたプログラムから動作させたい機械 (CPUなどの計
+算装置) が実行できるプログラムへ変換します。
+コンパイラの入力言語は\textbf{ソース言語}、ソース言語で書かれたプログラムを\textbf{ソースプログラ
+ム}と呼びます。一方、動作させたい機械のことを\textbf{ターゲット機械}、最終的に変換されるプ
+ログラムを\textbf{ターゲットプログラム}などと呼びます。
+
+図~\ref{fig:compilation_flow}は、一般的なコンパイラのコンパイルフローを表してい
+ます。コンパイラはソースプログラムを一気にターゲットプログラムへ変換するのではなく、何段階
+かのコード変換フェーズを経ることによって変換しています。
+
+\begin{figure}[t]
+  \centering
+  \caption{一般的なコンパイラのコンパイルフロー図}
+  \label{fig:compilation_flow}
+\end{figure}
+
+% 面白い例え: https://www.momoyama-usagi.com/entry/info-calc-sys11
+次に、コンパイラのコンパイルフローの概要を説明します。コンパイラは、まず、ユーザが記述した
+While 言語プログラム (ソースプログラム) を入力として受
+けとります。次に、\textbf{字句解析器}がソースプログラムを\textbf{字句} (\textbf{トークン}、
+\textbf{token}) へ分割し、字句の種類を識別する\textbf{字句解析 (Lexical Analysis)}を行い
+ます。次に、\textbf{構文解析器}が字句の列を整理し文構造を把握する\textbf{構文解析 (Syntax
+  Analysis)} を行い\textbf{構文木 (シンタックス・ツリー、syntax tree)} へ変換します。次に、
+変換された構文木に意味的な誤りがないかチェックする
+\textbf{意味解析 (Semantic Analysis)} を行います (本実験では意味解析の実装は時間の都合上ス
+キップします)。意味解析が完了し誤りがないことが分かったら、構文木を\textbf{中間表現
+  (Intermediate Representation)} へ変換します。中間表現を対象に、プログラムを高速に動かす
+ため、未使用定義の削除や関数呼出の展開といった\textbf{最適化 (Optimization)} を行います。
+最適化が終わったら、最後にターゲットプログラムを生成 (\textbf{コード生成、Code
+  Generation}) します。各フェーズの詳しい説明は教科書を参照してください。
+% TODO: 教科書の何ページを参照する？
+
+\section{While言語とWhile言語コンパイラ}
+\label{sec:while_lang}
+
+\subsection{While言語の仕様}
 %テキストの909ページ付録に構文例がのっているので参考にする．
-ソースコードを記述する言語をソース(原始)言語と呼びます。
-本実験では、図\ref{spec}の仕様を持つPascal風のソース言語のコンパイラを作成します。
+
+% ソースコードを記述する言語をソース(原始)言語と呼びます。
+本実験では、図\ref{spec}の仕様を持つ While 言語のコンパイラを実装します。
 仕様の見方については、\textbf{コンパイラI}の2章2.2節および3章3.3節を参照して下さい。
 この書き換え規則により、例えば代入文「\textsf{i:=i+1}」が生成できます（図\ref{生成例}）。
 また、図\ref{sample}に$9$の階乗を計算するプログラムの例を示します。
@@ -145,9 +185,25 @@ OCaml については、五十嵐淳教授 (京都大学) の「OCaml爆速入�
   \end{subfigure}
 \end{figure}
 
-\subsection{スタック機械の仕様}
-オブジェクトコードはターゲット機械に依存します。
-本実験のターゲット機械は仮想的なスタック機械です。詳細は\textbf{コンパイラI}の2章2.8節を参
+\subsection{While言語コンパイラの構造}
+
+本実験で実装する While 言語
+(詳しい解説は第~\ref{sec:while_lang}節を参照) コンパイラのコンパ
+イルフロー (コンパイルの段階を段階ごとに示したもの) です。
+
+\begin{figure}[t]
+  \centering
+  \caption{本実験で実装するコンパイラのコンパイルフロー図}
+  \label{fig:compilation_flow_while_lang}
+\end{figure}
+
+
+\section{仮想スタック機械の仕様}
+本実験では中間表現としては仮想的なスタック機械 (仮想機械) の仮想命令を利用します。仮想機械
+とは、Intel CPU や Ryzen CPU といった具体的な機械ではなく、それらを抽象化した機械のことで
+す。VirtualBoxのような仮想環境ではなく、JavaやPythonなどの処理系を思い浮かべてください。そ
+れらがいわゆる仮想機械を用いて実現されています。
+仮想的なスタック機械の詳細は\textbf{コンパイラI}の2章2.8節を参
 照して下さい。表~\ref{stackcommand}にスタック機械の命令セットを示します。なお、Pythonバイ
 トコードへの変換のため、教科書にある命令セットを一部変更しています。
 
@@ -822,8 +878,13 @@ semantic-action は任意の OCaml の式です。この式は定義される非
 \section{Pythonバイトコードを調べる上での資料}
 
 \begin{itemize}
-\item 「\href{https://docs.python.org/ja/3/library/dis.html}{Pythonバイトコードの逆アセンブラー}」
-\item 「\href{https://github.com/python/cpython/blob/main/Include/opcode_ids.h}{opcode\_ids.h}」、CPython
+\item
+  「\href{https://docs.python.org/ja/2.7/library/dis.html}{Pythonバイトコードの逆アセンブ
+    ラ}」、Python公式ドキュメント
+\item
+
+
+  「\href{https://github.com/python/cpython/blob/main/Include/opcode_ids.h}{opcode\_ids.h}」、CPython
 \end{itemize}
 
 
