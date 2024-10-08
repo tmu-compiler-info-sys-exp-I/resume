@@ -130,44 +130,49 @@ While 言語プログラム (ソースプログラム) を入力として受
 
 \begin{figure}[H]
   \centering
-  \begin{description}
-\item[S] 文 (statements)
-\item[a] 算術式 (arithmetic expressions, arith)
-\item[x,y] 変数 (program variables)
-\item[n] 数値 (number literals)
-\item[P] 真偽値 (boolean variables)
-\end{description}
+  \begin{minipage}[t]{0.6\linewidth}
 
-\begin{bnf}
-  $S$ : \textsf{文} ::= $x$ $\coloneq$ $a$
-  | skip
-  | $S_1$; $S_2$
-  | if $P$ then $S_1$ else $S_2$
-  | while $P$ begin $S$ end
-  ;;
+    \begin{bnf}
+      $S$ : \textsf{文} ::= $x$ $\coloneq$ $a$
+      | skip
+      | $S_1$; $S_2$
+      | if $P$ then $S_1$ else $S_2$
+      | while $P$ begin $S$ end
+      ;;
 
-  $a$ : \textsf{算術式} ::= $x$
-  | $n$
-  | ( $a$ )
-  | $a_1$ $op_a$ $a_2$
-  ;;
+      $a$ : \textsf{算術式} ::= $x$
+      | $n$
+      | ( $a$ )
+      | $a_1$ $op_a$ $a_2$
+      ;;
 
-  $op_a$ : \textsf{算術演算} ::= $+$ || $-$ || $\star$ || $/$
-  ;;
+      $op_a$ : \textsf{算術演算} ::= $+$ || $-$ || $\star$ || $/$
+      ;;
 
-  $P$ : \textsf{真偽値} ::= true
-  | false
-  | not $P$
-  | $P_1$ $op_b$ $P_2$
-  | $a_1$ $op_r$ $a_2$
-  ;;
+      $P$ : \textsf{真偽値} ::= true
+      | false
+      | not $P$
+      | $P_1$ $op_b$ $P_2$
+      | $a_1$ $op_r$ $a_2$
+      ;;
 
-  $op_b$ : \textsf{真偽演算} ::= and || or
-  ;;
+      $op_b$ : \textsf{真偽演算} ::= and || or
+      ;;
 
-  $op_r$ : \textbf{比較演算} ::= $<$ || $>$ || $\leq$ || $\geq$ || $==$
-  ;;
-\end{bnf}
+      $op_r$ : \textbf{比較演算} ::= $<$ || $>$ || $\leq$ || $\geq$ || $==$
+      ;;
+    \end{bnf}
+  \end{minipage}
+  \begin{minipage}[t]{0.3\linewidth}
+    \begin{description}
+    \item[S] 文 (statements)
+    \item[a] 算術式 (arithmetic expressions, arith)
+    \item[x,y] 変数 (program variables)
+    \item[n] 数値 (number literals)
+    \item[P] 真偽値 (boolean variables)
+    \end{description}
+  \end{minipage}
+
   \caption{ソース言語の仕様}\label{spec}
 \end{figure}
 
@@ -176,12 +181,12 @@ While 言語プログラム (ソースプログラム) を入力として受
     \centering
     \textsf{\small
       \begin{tabular}{lcl}
-        S    & $\rightarrow$ & x := a \\
-             & $\rightarrow$ & i := a \\
-             & $\rightarrow$ & i := a + a \\
-             & $\rightarrow$ & i := x + a \\
-             & $\rightarrow$ & i := i + a \\
-             & $\rightarrow$ & i := i + n \\
+        \textit{S}    & $\rightarrow$ & \textit{x} := \textit{a} \\
+             & $\rightarrow$ & i := \textit{a} \\
+             & $\rightarrow$ & i := \textit{a} + \textit{a} \\
+             & $\rightarrow$ & i := \textit{x} + a \\
+             & $\rightarrow$ & i := i + \textit{a} \\
+             & $\rightarrow$ & i := i + \textit{n} \\
              & $\rightarrow$ & i := i + 1
       \end{tabular}
     }
@@ -208,7 +213,7 @@ While 言語プログラム (ソースプログラム) を入力として受
 (詳しい解説は第~\ref{sec:while_lang}節を参照) コンパイラのコンパ
 イルフロー (コンパイルの段階を段階ごとに示したもの) です。
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\linewidth]{figs/compiler_structure_overview.pdf}
   \caption{本実験で実装するコンパイラのコンパイルフロー図}
