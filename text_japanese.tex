@@ -13,6 +13,8 @@
 \usepackage[colorlinks=true,urlcolor=cyan,linkcolor=blue,dvipdfmx]{hyperref}
 \usepackage[dvipdfmx]{hyperref}
 \usepackage{pxjahyper}
+\usepackage{simplebnf}
+\usepackage{mathtools}
 
 \usepackage{subcaption}
 \usepackage{listings}
@@ -114,7 +116,6 @@ While 言語プログラム (ソースプログラム) を入力として受
 ため、未使用定義の削除や関数呼出の展開といった\textbf{最適化 (Optimization)} を行います。
 最適化が終わったら、最後にターゲットプログラムを生成 (\textbf{コード生成、Code
   Generation}) します。各フェーズの詳しい説明は\textbf{コンパイラ}第2章あるいは第3章以降の該当ページを参照してください。
-% TODO: 教科書の何ページを参照する？
 
 \section{While言語とWhile言語コンパイラ}
 \label{sec:while_lang}
@@ -123,29 +124,50 @@ While 言語プログラム (ソースプログラム) を入力として受
 %テキストの909ページ付録に構文例がのっているので参考にする．
 
 % ソースコードを記述する言語をソース(原始)言語と呼びます。
-本実験では、図\ref{spec}の仕様を持つ While 言語のコンパイラを実装します。
-仕様の見方については、\textbf{コンパイラI}の2章2.2節および3章3.3節を参照して下さい。
-この書き換え規則により、例えば代入文「\textsf{i:=i+1}」が生成できます（図\ref{生成例}）。
-また、図\ref{sample}に$9$の階乗を計算するプログラムの例を示します。
+本実験では、図~\ref{spec}の仕様を持つ While 言語のコンパイラを実装します。仕様の中にある変数の意味は、直前の定義を参照してください。
+この書き換え規則により、例えば代入文 ``\textsf{i := i + 1}'' が生成できます（図~\ref{生成例}）。
+また、図~\ref{sample}に$9$の階乗を計算するプログラムの例を示します。
 
 \begin{figure}[H]
   \centering
-  \textsf{\small
-    \begin{tabular}{lcl}
-      \hline
-      stmt\_list & := & stmt\_list stmt; $|$ stmt; \\
-      stmt & := & id := expr $|$ \textbf{while} cond \textbf{do} stmt $|$ \textbf{begin} stmt\_list \textbf{end} \\
-      cond & := & expr $>$ expr $|$ expr $<$ expr $|$ expr == expr \\
-      expr & := & expr + term $|$ expr $-$ term $|$ term \\
-      term & := & term $\ast$ factor $|$ factor \\
-      factor & := & id $|$ num $|$ (expr)\\
-      id & := & letter (letter $|$ digit)* \\
-      num & := & digit digit* \\
-      letter & := & a $|$ b $|$ $\ldots$ $|$ z $|$ A $|$ B $|$ $\ldots$ $|$ Z \\
-      digit & := & 0 $|$ 1 $|$ 2 $|$ $\ldots$ $|$ 9\\
-      \hline
-    \end{tabular}
-  }
+  \begin{description}
+\item[S] 文 (statements)
+\item[a] 算術式 (arithmetic expressions, arith)
+\item[x,y] 変数 (program variables)
+\item[n] 数値 (number literals)
+\item[P] 真偽値 (boolean variables)
+\end{description}
+
+\begin{bnf}
+  $S$ : \textsf{文} ::= $x$ $\coloneq$ $a$
+  | skip
+  | $S_1$; $S_2$
+  | if $P$ then $S_1$ else $S_2$
+  | while $P$ begin $S$ end
+  ;;
+
+  $a$ : \textsf{算術式} ::= $x$
+  | $n$
+  | ( $a$ )
+  | $a_1$ $op_a$ $a_2$
+  ;;
+
+  $op_a$ : \textsf{算術演算} ::= $+$ || $-$ || $\star$ || $/$
+  ;;
+
+  $P$ : \textsf{真偽値} ::= true
+  | false
+  | not $P$
+  | $P_1$ $op_b$ $P_2$
+  | $a_1$ $op_r$ $a_2$
+  ;;
+
+  $op_b$ : \textsf{真偽演算} ::= and || or
+  ;;
+
+  $op_r$ : \textbf{比較演算} ::= $<$ || $>$ || $\leq$ || $\geq$ || $==$
+  ;;
+\end{bnf}
   \caption{ソース言語の仕様}\label{spec}
 \end{figure}
 
@@ -154,18 +176,12 @@ While 言語プログラム (ソースプログラム) を入力として受
     \centering
     \textsf{\small
       \begin{tabular}{lcl}
-        stmt & $\rightarrow$ & id := expr \\
-             & $\rightarrow$ & letter := expr \\
-             & $\rightarrow$ & i := expr \\
-             & $\rightarrow$ & i := expr + term \\
-             & $\rightarrow$ & i := term + term \\
-             & $\rightarrow$ & i := factor + term \\
-             & $\rightarrow$ & i := id + term \\
-             & $\rightarrow$ & i := letter + term \\
-             & $\rightarrow$ & i := i + term \\
-             & $\rightarrow$ & i := i + factor \\
-             & $\rightarrow$ & i := i + num \\
-             & $\rightarrow$ & i := i + digit \\
+        S    & $\rightarrow$ & x := a \\
+             & $\rightarrow$ & i := a \\
+             & $\rightarrow$ & i := a + a \\
+             & $\rightarrow$ & i := x + a \\
+             & $\rightarrow$ & i := i + a \\
+             & $\rightarrow$ & i := i + n \\
              & $\rightarrow$ & i := i + 1
       \end{tabular}
     }
@@ -194,6 +210,7 @@ While 言語プログラム (ソースプログラム) を入力として受
 
 \begin{figure}[t]
   \centering
+  \includegraphics[width=\linewidth]{figs/compiler_structure_overview.pdf}
   \caption{本実験で実装するコンパイラのコンパイルフロー図}
   \label{fig:compilation_flow_while_lang}
 \end{figure}
@@ -539,9 +556,9 @@ cd compiler-day1
   \end{itemize}
 \item [\fbox{課題3}] \verb|begin| -- \verb|end| 文 と\verb|while| 文を実装してください。
   具体的には、\verb|syntax.ml|、\verb|parser.mly| と \verb|lexer.mll| を改造し、上記の文を
-  認識できるよう改良してください。
+  認識できるよう改良してください。場合によっては示された補足資料を参考に実装してください。
 \item [\fbox{課題4}] (時間があれば) 追加した演算や文を、対応する仮想スタック命令へ翻訳する
-  プログラムを\verb|virtual_stack.ml| に実装してください。
+  プログラムを\verb|virtual_stack.ml| に実装してください。場合によっては示された補足資料を参考に実装してください。
 \end{description}
 
 具体的には、以下の手順で取り組んでください。
