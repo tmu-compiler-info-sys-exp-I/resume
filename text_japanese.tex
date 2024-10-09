@@ -385,7 +385,7 @@ OK ですが、本演習は VS code をお勧めします。
 OCamlには様々な処理系が存在します。まず1番簡単な方法がインタプリタ実行する方法です。
 プログラムを \verb|ocaml| コマンドで実行します。
 
-\paragraph*{仮想開発環境，手元での開発環境の場合}
+\paragraph*{仮想開発環境、macOSの場合}
 
 仮想のコマンドをターミナルに入力することで OCaml プログラムを実行できます．
 
@@ -407,7 +407,7 @@ $ ocamlopt -o <outputname> <your program name>.ml
 その後、\verb|<outputname>| という名前で実行バイナリが生成されますので、
 \verb|./<outputname>| というコマンドで実行してください。
 
-\paragraph*{仮想開発環境，手元での開発環境の場合}
+\paragraph*{演習質の場合}
 
 コマンドプロンプトを起動し，\verb|compiler-dayX| (X は 1,2,3 のどれか) に移動したあと，
 まず \verb|setup.bat| を実行してください．実行は1度だけでOKです．\verb|win64ocaml| というリポジトリをダウンロードします．
@@ -495,7 +495,7 @@ $ ocamlopt -o <outputname> <your program name>.ml
 1日目では、まずOCamlの解説を行います。「OCaml Crash Course」と「OCaml爆速入門」を実演しな
 がら解説します．次に、簡単にコンパイラの仕組みについて解説します．
 その後，今回のコンパイラ実装演習で核となるレキサ・パーサジェネレータについて学びま
-す。OCaml コンパイラには、ocamllex/ocamlyaccというレキサ・パーサジェネレータが付属します。
+す。OCaml コンパイラには、ocamllex/ocamlyaccというレキサ・パーサジネレータが付属します。
 今回はこれらを利用し、簡単な電卓アプリケーションを作成します。雛形は \verb|lexer.mll|、
 \verb|parser.mly|、そして\verb|calc.ml| に定義されています。
 
@@ -538,8 +538,8 @@ cd compiler-day1
 
 
 2日目は、While言語から仮想スタック機械へのコンパイラを製作します。今回実装の対象とする制御
-構造は、\verb|begin| -- \verb|end| 文、 \verb|while| 文です。 簡単のため、 \verb|if| 式の
-実装は時間が余った場合に取り組みますので、課題には組み込んでいません。
+構造は、\verb|begin| -- \verb|end| 文、 \verb|while| 文です。
+\verb|if| 式の実装は時間が余った場合に取り組みますので、課題には組み込んでいません。
 
 課題に取り組む前に、コンパイラの雛形となるソースコードを
 \href{https://github.com/tmu-compiler-info-sys-exp-I/compiler-day2}{GitHub}からダウンロー
