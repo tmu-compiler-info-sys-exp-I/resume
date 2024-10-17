@@ -603,7 +603,7 @@ cd compiler-day1
 
 \paragraph*{\, \texttt{begin} -- \texttt{end} 文の定義の仕方}
 
-\texttt{begin} -- \texttt{end}\verb|begin| -- \verb|end| 文は、\verb|i := 1; j := 2| といった文の連続を表します。
+\verb|begin| -- \verb|end| 文は、\verb|i := 1; j := 2| といった文の連続を表します。
 今回、 \verb|begin| -- \verb|end| は \verb|Block| 型という名前にコンパイルするとします。
 したがって、文の連続を \verb|Seq| 型で表し、\verb|Seq| 型を \verb|Block| 型で包めば実現できます。
 \verb|Seq| 型は文と文の連続なので文 (s, statement) を要素に持たせた形
