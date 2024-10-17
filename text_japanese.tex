@@ -551,9 +551,9 @@ cd compiler-day1
 \item [\fbox{課題1}] 次の算術二項演算子を実装してください．具体的には、\verb|syntax.ml|、
   \verb|parser.mly| と \verb|lexer.mll| を改造し、上記の演算を認識できるようにしてください．
   \begin{itemize}
-  \item 引き算
-  \item かけ算
-  \item 割り算
+  \item 引き算 (Subtract, Sub)
+  \item かけ算 (Multiply, Mul)
+  \item 割り算 (Division, Div)
   \end{itemize}
 \item [\fbox{課題2}] 次の比較二項演算子を実装してください．具体的には、\verb|syntax.ml|、
   \verb|parser.mly| と \verb|lexer.mll| を改造し、上記の演算を認識できるようにしてください．
@@ -564,6 +564,7 @@ cd compiler-day1
   \item $==$ (Equal, EQ)
   \end{itemize}
 \item [\fbox{課題3}] \verb|begin| -- \verb|end| 文 と\verb|while| 文を実装してください。
+  \verb|begin| -- \verb|end| は \verb|Block| 型、 \verb|while| 文は \verb|While| 型という名前を用い文法上で表現します。
   具体的には、\verb|syntax.ml|、\verb|parser.mly| と \verb|lexer.mll| を改造し、上記の文を
   認識できるよう改良してください。場合によっては示された補足資料を参考に実装してください。
 \item [\fbox{課題4}] (時間があれば) 追加した演算や文を、対応する仮想スタック命令へ翻訳する
@@ -576,11 +577,12 @@ cd compiler-day1
 \noindent\fbox{\textbf{課題1・2}}
 
 \begin{enumerate}
-\item \verb|sytax.ml| に \verb|Sub|, \verb|Div|, \verb|Mul|, \verb|EQ| などを
-  \verb|Sytax.t| に定義
+\item \verb|sytax.ml| に \verb|Sub|, \verb|Div|, \verb|Mul|, \verb|EQ| などを定義
   \begin{itemize}
-  \item \verb|Add| や \verb|LT| の定義を真似して実装する
-  \item 適宜 \verb|print_t| 関数のパターンマッチに 文字列の変換ルールを追加
+  \item \verb|Add| や \verb|Sub| などの算術演算子は \verb|type a = ...| に追加する形で実装
+  \item \verb|EQ| や \verb|LT| などの比較演算子は \verb|type p = ...| に追加する形で実装
+  \item デバッグ用の補助関数である \verb|string_of_arith|, \verb|string_of_predicate| 関数
+    のパターンマッチに、構文木から文字列の変換パターンを追加
   \end{itemize}
 \item \verb|parser.mly| で引き算、割り算、等号などのトークンを定義する
 \item \verb|lexer.mly| で定義した文字列からトークンへ翻訳するルールを定義する
@@ -591,13 +593,57 @@ cd compiler-day1
 \noindent\fbox{\textbf{課題3}}
 
 \begin{enumerate}
-\item \verb|syntax.ml| に \verb|Seq| 型、そして\verb|While| 型を追加する
+\item \verb|syntax.ml| に \verb|Seq| 型、\verb|Block| 型、そして\verb|While| 型を追加する
 \item \verb|parser.mly| で \verb|begin| -- \verb|end|、そして \verb|while| を認識する
   ためのトークンを定義
 \item \verb|lexer.mll| で文字列から定義したトークンへ翻訳するためのルールを定義
 \item \verb|parser.mly| でトークンから \verb|syntax.ml| で定義した \verb|Assign|,
   \verb|Seq|, \verb|While| へ翻訳するルールを定義
 \end{enumerate}
+
+\paragraph*{\, \texttt{begin} -- \texttt{end} 文の定義の仕方}
+
+\texttt{begin} -- \texttt{end}\verb|begin| -- \verb|end| 文は、\verb|i := 1; j := 2| といった文の連続を表します。
+今回、 \verb|begin| -- \verb|end| は \verb|Block| 型という名前にコンパイルするとします。
+したがって、文の連続を \verb|Seq| 型で表し、\verb|Seq| 型を \verb|Block| 型で包めば実現できます。
+\verb|Seq| 型は文と文の連続なので文 (s, statement) を要素に持たせた形
+(\verb|Seq of s * s|) で表現し、\verb|Block| 型は文である \verb|Seq| 型を要素に持つため
+\verb|Block of s| と定義すればよいでしょう。
+
+では、文の連続はどのように表現すればよいでしょうか。
+文の連続は、パーサジェネレータのレベルで補足することができます。具体的には、
+\verb|parser.mly| に文の連続をパースできるルールを追加すれば実現できます。では、どのように
+文の ``連続'' を表現すればよいでしょうか？  ocamlyacc のテクニックを用い、次のような定義を
+記述することで連続した文を \verb|Seq| 型へ変換することができます。
+
+\begin{lstlisting}
+statement:
+| BEGIN statements END { ... }
+
+/* 連続する statement (文) をパースするための記号 */
+statements:
+| statement SEMICOLON { ... }
+| statement SEMICOLON statements { ... }
+\end{lstlisting}
+
+\verb|statments| ルールは次のように読みます。まず、\verb|statements| にマッチしたとき、一文
+しかなかったら \verb|statement| を評価する (評価する所は \verb|...| になっています)。
+一方、文の終わりを表す \verb|SEMICOLON| の後ろに連続する \verb|statements| が来た場合、
+\verb|Seq| 型に対応させる (対応の仕方は自分で考えてみてください)。
+
+\paragraph*{\, \texttt{while} 文の定義の仕方}
+
+\verb|while| 文のパースは、\verb|while| 文の構成要素を洗い出すことができれば簡単です。
+\verb|while| 文は、次の要素から構成されます：
+
+\begin{lstlisting}
+WHILE predicate DO
+  statement
+\end{lstlisting}
+
+これは、次のように読むことができます：\verb|WHILE| が来たら \verb|predicate| をパースする。
+その次に \verb|DO| が来て、最後に\verb|statement| が来る。この読み方に従ってパースし
+\verb|While| 型に変換する定義を \verb|parser.mly| の \verb|statement| のルールに追加します。
 
 \noindent\fbox{\textbf{課題4}}
 
