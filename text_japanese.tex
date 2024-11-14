@@ -707,7 +707,22 @@ cd compiler-day2
 .\bin\clean.bat
 
 # バイナリの実行
-.\bin\run.bat .\while_lang <path-to-while-lang-file>
+.\bin\run.bat .\while_lang
+\end{lstlisting}
+
+\subsubsection{UNIX環境 (macOS や仮想環境の Linux) での実行方法}
+
+\begin{lstlisting}
+cd compiler-day2 
+
+# プロジェクトのビルド
+make
+
+# 中間ファイルの削除
+make clean 
+
+# バイナリの実行
+./while_lang
 \end{lstlisting}
 
 \subsection{3日目: 2日目の続き + Pythonバイトコードコンパイラの作成}
@@ -790,6 +805,19 @@ cd compiler-day3
 # バイナリの実行
 .\bin\run.bat .\while_lang <path-to-while-lang-file>
 \end{lstlisting}
+
+\begin{lstlisting}
+  cd compiler-day2 
+  
+  # プロジェクトのビルド
+  make
+  
+  # 中間ファイルの削除
+  make clean 
+  
+  # バイナリの実行
+  ./while_lang <path-to-while-lang-file> # while 言語プログラムファイルへのパス
+  \end{lstlisting}
 
 \newpage
 \section{ocamllex/ocamlyacc入門}
