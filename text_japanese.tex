@@ -38,6 +38,9 @@
 \begin{document}
 \maketitle
 
+\tableofcontents
+\clearpage
+
 \section{実験目的}
 本実験では、コンパイラの実装を通してある程度複雑なソフトウェアの実装手法を体験します。
 コンパイラは愚直に実装しようとすると大変ですが、これまで多くの実装手法が研究・開発されてきました。
@@ -51,7 +54,7 @@
 本実験の目的は以下の通りです。
 
 \begin{enumerate}
-\item Pscal 風の高級言語 (While言語) を仮想的なスタック機械の命令コードに翻訳する仕組みを学ぶ。
+\item Pascal 風の高級言語 (While言語) を仮想的なスタック機械の命令コードに翻訳する仕組みを学ぶ。
 \item 仮想的なスタック機械の命令コードを経由してPython命令コードへ翻訳する仕組みを学ぶ。同
   時に、実際にPythonインタプリタでWhile言語コンパイラを動作させてみる。
 \item スタック機械である Python インタプリタの仕組みの概観を理解する。
@@ -430,35 +433,6 @@ $ ocamlopt -o <outputname> <your program name>.ml
 > .\bin\run.bat .\win64ocaml\bin\ocamlopt.byte.exe <your program name>.ml
 \end{lstlisting}
 
-% 例えば、 \verb|cacl.ml| は次のように定義します。
-
-% \begin{lstlisting}[language=Caml]
-% let () =  (* main 関数 *)
-%   let x = 1 in (* 変数束縛 *)
-%   print_int x  (* int 型の値 x を標準出力に print *)
-% \end{lstlisting}
-
-% \verb|ocaml calc.ml| を実行すると、標準出力に \verb|1| が出力されます。
-
-% \verb|let () = ... | はメイン関数です。メイン関数の中に書かれた式が実行されます。
-
-% OCaml は、関数を \verb|let <関数名> <引数名> = <関数ボディ>| または、再帰呼出関数の場合は
-% \verb|let rec <関数名> <引数名> = <関数ボディ>| と記述します。たとえば、以下のように定義し
-% ます。
-
-% \begin{lstlisting}[language=Caml]
-% let add_to x n =
-%   x + n
-
-% let rec factorial n =
-%   if n <= 1 then 1
-%   else n * (factorial (n - 1))
-% \end{lstlisting}
-
-% 条件分岐は \verb|if <条件式> then <式1> else <式2>| と記述します。C言語と違い、\verb|else|
-% 節を省略したら unit 型の式 (値を返さない式) となります。
-
-\newpage
 \section{演習}
 
 \subsection{予習: OCaml入門}
