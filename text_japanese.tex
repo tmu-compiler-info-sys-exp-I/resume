@@ -713,13 +713,16 @@ cd compiler-day2
 \subsubsection{UNIX環境 (macOS や仮想環境の Linux) での実行方法}
 
 \begin{lstlisting}
-cd compiler-day2 
+# プロジェクトディレクトリへ移動
+cd eecs-compiler/compiler-day2
+
+# 演習室で取り組んだファイルをコピーする
 
 # プロジェクトのビルド
 make
 
 # 中間ファイルの削除
-make clean 
+make clean
 
 # バイナリの実行
 ./while_lang
@@ -744,6 +747,9 @@ make clean
 
 \begin{lstlisting}
 $ ./while_lang test/assign.while
+
+# 演習室の場合
+$ .\bin\run.bat .\while_lang .\test\assign.while
 \end{lstlisting}
 
 すると、\verb|test/assign.pyc| というファイルが生成されます。この中には Pythonバイトコードの
@@ -808,13 +814,13 @@ cd compiler-day3
 
 \begin{lstlisting}
 cd compiler-day3
-  
+
 # プロジェクトのビルド
 make
-  
+
 # 中間ファイルの削除
-make clean 
-  
+make clean
+
 # バイナリの実行
 ./while_lang <path-to-while-lang-file> # while 言語プログラムファイルへのパス
 \end{lstlisting}
