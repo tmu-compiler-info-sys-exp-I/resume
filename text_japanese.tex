@@ -42,11 +42,6 @@
 \clearpage
 
 \section{実験目的}
-本実験では、コンパイラの実装を通してある程度複雑なソフトウェアの実装手法を体験します。
-コンパイラは愚直に実装しようとすると大変ですが、これまで多くの実装手法が研究・開発されてきました。
-具体的には、While 言語という、制御構造として繰り返し構造のみを持った言語のコンパイラを実装
-し、その開発手法の一旦を垣間見ることがきます。
-
 % 図~\ref{phase}にコンパイル処理の流れを示します。\framebox[1cm][l]{　}で囲まれた各フェーズ
 % の具体的な処理については、\ref{text}節に示したテキスト「\textbf{コンパイラI}」と
 % 「\textbf{コンパイラII}」を参照して下さい。
@@ -510,14 +505,23 @@ cd compiler-day1
 
 \subsection{2日目: 仮想スタック機械への簡易コンパイラの作成}
 
+2日目は、While言語から仮想スタック機械へのコンパイラを製作します。まず、本日の演習で使用す
+る雛形を GitHub からダウンロードし、ダウンロードしたディレクトリに移動します。
 
-2日目は、While言語から仮想スタック機械へのコンパイラを製作します。今回実装の対象とする制御
+\begin{lstlisting}
+git clone https://github.com/tmu-compiler-info-sys-exp-I/compiler-day2.git
+
+cd compiler-day2
+\end{lstlisting}
+
+ディレクトリに移動した後、 VS Code で \verb|compiler-day2| を開けたら準備完了です。
+
+
+今回の実装の対象とする制御
 構造は、\verb|begin| -- \verb|end| 文、 \verb|while| 文です。
 \verb|if| 式の実装は時間が余った場合に取り組みますので、課題には組み込んでいません。
 
-課題に取り組む前に、コンパイラの雛形となるソースコードを
-\href{https://github.com/tmu-compiler-info-sys-exp-I/compiler-day2}{GitHub}からダウンロー
-ドできるか確認してください。配布するソースコードは大部分が実装されていますが、パーサーが足
+配布するソースコードは大部分が実装されていますが、パーサーが足
 し算と $<$ 以外の演算を認識しません。また、
 \verb|begin| -- \verb|end| 文 と \verb|while| 文を認識しません。
 
@@ -580,15 +584,15 @@ cd compiler-day1
 \verb|begin| -- \verb|end| 文は、\verb|i := 1; j := 2| といった文の連続を表します。
 今回、 \verb|begin| -- \verb|end| は \verb|Block| 型という名前にコンパイルするとします。
 したがって、文の連続を \verb|Seq| 型で表し、\verb|Seq| 型を \verb|Block| 型で包めば実現できます。
-\verb|Seq| 型は文と文の連続なので文 (s, statement) を要素に持たせた形
-(\verb|Seq of s * s|) で表現し、\verb|Block| 型は文である \verb|Seq| 型を要素に持つため
+\verb|Seq| 型は文と文の連続なので文 (s, statement) のペア
+(\verb|Seq of s * s|) で表現し、\verb|Block| 型は文 (statement, s) である \verb|Seq| 型を要素に持つため
 \verb|Block of s| と定義すればよいでしょう。
 
-では、文の連続はどのように表現すればよいでしょうか。
+文の連続 \verb|Seq| はどのように表現すればよいでしょうか。
 文の連続は、パーサジェネレータのレベルで補足することができます。具体的には、
-\verb|parser.mly| に文の連続をパースできるルールを追加すれば実現できます。では、どのように
-文の ``連続'' を表現すればよいでしょうか？  ocamlyacc のテクニックを用い、次のような定義を
-記述することで連続した文を \verb|Seq| 型へ変換することができます。
+\verb|parser.mly| に文の連続をパースできるルールを追加すれば実現できます。camlyacc のテク
+ニックを用い、次のような定義を記述することで連続した文を \verb|Seq| 型へ変換することができ
+ます。
 
 \begin{lstlisting}
 statement:
