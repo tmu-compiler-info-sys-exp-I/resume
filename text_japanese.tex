@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{jsarticle}
+\documentclass[a4paper,10pt]{jsarticle}
 %\usepackage{latexsym}
 %\usepackage{epsfig}
 \usepackage[dvipdfmx]{graphicx}
@@ -50,9 +50,8 @@
 
 \begin{enumerate}
 \item Pascal 風の高級言語 (While言語) を仮想的なスタック機械の命令コードに翻訳する仕組みを学ぶ。
-\item 仮想的なスタック機械の命令コードを経由してPython命令コードへ翻訳する仕組みを学ぶ。同
-  時に、実際にPythonインタプリタでWhile言語コンパイラを動作させてみる。
-\item スタック機械である Python インタプリタの仕組みの概観を理解する。
+\item 仮想的なスタック機械の命令コードを経由して WebAssembly へ翻訳する仕組みを学ぶ。
+\item While言語コンパイラが生成したコードが実際に動作することを確認する。
 \item Visual Studio Code に慣れる。
 \end{enumerate}
 
@@ -307,6 +306,53 @@ label	L.1
 
 \end{enumerate}
 
+\section{WebAssemblyの概要}
+
+\subsection{WebAssemblyとは}
+WebAssembly (Wasm) は、Webブラウザ上で高性能に実行できる
+バイナリ形式の命令セットアーキテクチャです。
+Wasmは従来のJavaScriptに比べて実行速度が速く、
+C/C++やRustといった言語からコンパイルして利用できます。
+現在ではブラウザのみならず、サーバサイドや組込み環境でも利用が広がっています。
+
+\subsection{特徴}
+\begin{itemize}
+  \item \textbf{バイナリ形式:} 人間が読むよりも機械で効率的に処理できる形式。
+  \item \textbf{スタックマシンベース:} 命令はオペランドスタックを操作する形で記述される。
+  \item \textbf{安全性:} メモリ境界のチェックが標準で行われ、セキュリティが保証される。
+  \item \textbf{移植性:} プラットフォーム非依存であり、同じバイナリが異なる環境でも動作可能。
+\end{itemize}
+
+\subsection{Wasmの実行モデル}
+Wasmは\textbf{仮想スタックマシン}として動作します。
+すべての命令はスタックから値を取り出し、演算を行い、結果を再びスタックに積みます。
+
+\begin{center}
+\begin{tabular}{c|c}
+  命令 & 動作例 \\
+  \hline
+  \texttt{i32.const 5} & スタックに整数5を積む \\
+  \texttt{i32.const 7} & スタックに整数7を積む \\
+  \texttt{i32.add}     & スタック上の2つを加算し、結果12を積む
+\end{tabular}
+\end{center}
+
+\subsection{WAT (WebAssembly Text Format)}
+Wasmのバイナリ形式は人間が直接読むのは困難です。そこで、対応するテキスト形式として
+\textbf{WAT (WebAssembly Text format)} が用意されています。
+
+\begin{lstlisting}[language=lisp, caption={簡単なWATプログラム}]
+(module
+  (func $add (param $x i32) (param $y i32) (result i32)
+    local.get $x
+    local.get $y
+    i32.add)
+  (export "add" (func $add)))
+\end{lstlisting}
+
+上記は「2つの整数を受け取り、その和を返す」関数\texttt{add}を定義し、
+外部から利用できるようにエクスポートしている例です。
+
 \newpage
 \section{準備}
 
@@ -321,27 +367,41 @@ label	L.1
 \subsubsection{仮想開発環境のインストール}
 \label{sec:virtual_machine}
 
-本演習では、OCamlやエディタが既にインストールされた仮想開発環境を用意しています。
-OS は Ubuntu 24.04 LTS (Long-Term Support) です。CPU は x86 ベースのもの (例えば、Intel の
-Core シリーズや AMD の Ryzen シリーズ) を対象としているので、ARM ベースの CPU を使用してい
-る場合 (例えば、macOS の M1 チップ) は仮想開発環境を利用せず手元で環境構築をしてください。
+% 本演習では、OCamlやエディタが既にインストールされた仮想開発環境を用意しています。
+% OS は Ubuntu 24.04 LTS (Long-Term Support) です。CPU は x86 ベースのもの (例えば、Intel の
+% Core シリーズや AMD の Ryzen シリーズ) を対象としているので、ARM ベースの CPU を使用してい
+% る場合 (例えば、macOS の M1 チップ) は仮想開発環境を利用せず手元で環境構築をしてください。
 
-まず、Oracle VirtualBox を手元のマシンにインストールします。
-この\href{https://www.virtualbox.org/wiki/Downloads}{リンク}からダウンロードページへ行き、
-手元のマシンの OS (macOSやWindowd) に対応するバージョンをインストールしてください。
+% まず、Oracle VirtualBox を手元のマシンにインストールします。
+% この\href{https://www.virtualbox.org/wiki/Downloads}{リンク}からダウンロードページへ行き、
+% 手元のマシンの OS (macOSやWindowd) に対応するバージョンをインストールしてください。
 
-インストールが終わったら、\href{https://tmpuc.box.com/s/2b8nzqw2vhx047a488m26h1whn8wfdfz}{Box}から
-Ubuntu.ova をダウンロードしてください。
-起動が終わったら、VirtualBox に Ubuntu.ova を読み込みます。「仮想アプライアンスのインポー
-ト」を押し、Ubuntu.ovaを選択したあと、「開く」、「次へ」をクリックしてください。
-案内に従っていけば仮想マシンを構築できます。
+% インストールが終わったら、\href{https://tmpuc.box.com/s/2b8nzqw2vhx047a488m26h1whn8wfdfz}{Box}から
+% Ubuntu.ova をダウンロードしてください。
+% 起動が終わったら、VirtualBox に Ubuntu.ova を読み込みます。「仮想アプライアンスのインポー
+% ト」を押し、Ubuntu.ovaを選択したあと、「開く」、「次へ」をクリックしてください。
+% 案内に従っていけば仮想マシンを構築できます。
 
-仮想開発環境は以下のIDとパスワードを設定しています：
+% 仮想開発環境は以下のIDとパスワードを設定しています：
 
-\begin{itemize}
-\item User: eecs-compiler
-\item Password: eecs-compiler
-\end{itemize}
+% \begin{itemize}
+% \item User: eecs-compiler
+% \item Password: eecs-compiler
+% \end{itemize}
+
+本演習では、自前の Windows PC ではWindows Subsystem Linux 2 (WSL 2) の使用を前提とします。
+WSL 2 は Windows OS で Linux を動作させることのできる便利なツールです。今後の演習や研究で使用する機会
+も増えるので、今のうちから慣れましょう。
+
+インストールは非常に単純です。PowerShell を \textbf{管理者 (Administrator)} モー
+ドで開き、以下のコマンドを打ち込むだけです。
+
+\begin{lstlisting}
+wsl --install
+\end{lstlisting}
+
+このコマンドで Ubuntu がインストールされます。次回以降、トレイやターミナルから
+Ubuntu を選択し実行してください。
 
 \subsubsection{OCamlのインストール}
 
@@ -364,10 +424,11 @@ macOS ではターミナルを使用します。
 
 \paragraph{Windows}
 
-演習室では特別な設定は必要ありません。
+WSL 2 では \verb|apt| を使用します。
 
-お手元のWindowsマシンでは第~\ref{sec:virtual_machine}章で説明したVirtualBox を利用した方法を活用
-してください。
+\begin{lstlisting}
+sudo apt install -y ocaml
+\end{lstlisting}
 
 \subsubsection{Visual Studio Code のインストール}
 
@@ -383,9 +444,9 @@ OK ですが、本演習は VS code をお勧めします。
 OCamlには様々な処理系が存在します。まず1番簡単な方法がインタプリタ実行する方法です。
 プログラムを \verb|ocaml| コマンドで実行します。
 
-\paragraph*{仮想開発環境、macOSの場合}
+\paragraph*{WSL, macOSの場合}
 
-仮想のコマンドをターミナルに入力することで OCaml プログラムを実行できます．
+コマンドをターミナルに入力することで OCaml プログラムを実行できます．
 
 \begin{lstlisting}
 $ ocaml <your program name>.ml # <your program name> は任意の文字列に変更
@@ -407,8 +468,9 @@ $ ocamlopt -o <outputname> <your program name>.ml
 
 \paragraph*{演習室の場合}
 
-コマンドプロンプトを起動し，\verb|compiler-dayX| (X は 1,2,3 のどれか) に移動したあと，
-まず \verb|setup.bat| を実行してください．実行は1度だけでOKです．\verb|win64ocaml| というリポジトリをダウンロードします．
+コマンドプロンプトを起動し，授業で配布されたディレクトリに移動します。そして、
+\verb|setup.bat| を実行してください．実行は1度だけでOKです．
+\verb|win64ocaml| というリポジトリをダウンロードします．
 
 \begin{lstlisting}
 > .\bin\setup.bat
@@ -428,6 +490,7 @@ $ ocamlopt -o <outputname> <your program name>.ml
 > .\bin\run.bat .\win64ocaml\bin\ocamlopt.byte.exe <your program name>.ml
 \end{lstlisting}
 
+\newpage
 \section{演習}
 
 \subsection{予習: OCaml入門}
@@ -503,18 +566,18 @@ cd compiler-day1
 .\bin\run.bat .\calc
 \end{lstlisting}
 
-\subsection{2日目: 仮想スタック機械への簡易コンパイラの作成}
+\subsection{2日目〜3日目: 仮想スタック機械への簡易コンパイラの作成}
 
-2日目は、While言語から仮想スタック機械へのコンパイラを製作します。まず、本日の演習で使用す
-る雛形を GitHub からダウンロードし、ダウンロードしたディレクトリに移動します。
+2・3日目は、While言語から仮想スタック機械へのコンパイラを製作します。まず、本日
+の演習で使用する雛形を GitHub からダウンロードし、ダウンロードしたディレクトリに移動します。
 
 \begin{lstlisting}
-git clone https://github.com/tmu-compiler-info-sys-exp-I/compiler-day2.git
+git clone https://github.com/tmu-compiler-info-sys-exp-I/while_lang2025.git
 
-cd compiler-day2
+cd while_lang2025
 \end{lstlisting}
 
-ディレクトリに移動した後、 VS Code で \verb|compiler-day2| を開けたら準備完了です。
+ディレクトリに移動した後、 VS Code で \verb|while_lang2025| を開けたら準備完了です。
 
 
 今回の実装の対象とする制御
@@ -524,6 +587,8 @@ cd compiler-day2
 配布するソースコードは大部分が実装されていますが、パーサーが足
 し算と $<$ 以外の演算を認識しません。また、
 \verb|begin| -- \verb|end| 文 と \verb|while| 文を認識しません。
+
+\subsubsection{課題}
 
 \begin{description}
 \item [\fbox{課題1}] 次の算術二項演算子を実装してください．具体的には、\verb|syntax.ml|、
@@ -549,6 +614,8 @@ cd compiler-day2
   プログラムを\verb|virtual_stack.ml| に実装してください。場合によっては示された補足資料を
   参考に実装してください。
 \end{description}
+
+\subsubsection{課題に取り組む手順}
 
 具体的には、以下の手順で取り組んでください。
 
@@ -632,7 +699,6 @@ WHILE predicate DO
 実装されていますが、パーサと同様に、仮想命令生成器 (\verb|virtual_stack.ml|) が代入文、
 \verb|begin| -- \verb|end| 文、そして \verb|while| 文を認識しません。これらを正しく仮想ス
 タック機械の命令へ翻訳できるように \verb|virual_stack.ml| を改良してください。
-
 具体的には、以下の手順で取り組んでください。
 
 \begin{enumerate}
@@ -658,7 +724,7 @@ WHILE predicate DO
 \begin{itemize}
 \item 1日目のレポート
 \item 2日目のレポート (課題1〜4、途中まででOK)
-\item 3日目のレポート (課題1〜4、実装課題または調査課題)
+\item 3日目のレポート (課題1〜4、実装課題)
 \end{itemize}
 
 に対して行うため、2日目の課題が最後まで終わらない状態で、つまり、出来たところまで含めた形
@@ -676,7 +742,7 @@ WHILE predicate DO
 コマンドプロンプト上で実行してください。
 
 \begin{lstlisting}
-cd compiler-day2
+cd while_lang2025
 
 # プロジェクトのビルド
 .\bin\build.bat
@@ -688,40 +754,17 @@ cd compiler-day2
 .\bin\run.bat .\while_lang
 \end{lstlisting}
 
-\subsubsection{UNIX環境 (macOS や仮想環境の Linux) での実行方法}
+\subsection{3日目: 2日目の続き + WebAssemblyバイトコードコンパイラの作成}
 
-\begin{lstlisting}
-# プロジェクトディレクトリへ移動
-cd eecs-compiler/compiler-day2
-
-# 演習室で取り組んだファイルをコピーする
-
-# プロジェクトのビルド
-make
-
-# 中間ファイルの削除
-make clean
-
-# バイナリの実行
-./while_lang
-\end{lstlisting}
-
-\subsection{3日目: 2日目の続き + Pythonバイトコードコンパイラの作成}
-
-まず、コンパイラの雛形となるソースコードを
-\href{https://github.com/tmu-compiler-info-sys-exp-I/compiler-day3}{GitHub}からダウンロー
-ドできるか確認してください。
-
-3日目は、実装課題と調査課題の二種類があります。2日目の実装が8割以上完成している人は実装課
-題に取り組んでください。2日目の実装が間に合わなかった人は2日目の実装の続きに取り組んだ上で
-調査課題を遂行してください。どちらも取り組んだ場合は加点します。
+ソースコードは2日目と同じものを引き続き使用します。3日目は、追加の実装課題があり
+ます。2日目の実装が8割以上完成している人は実装課題に取り組んでください。
 
 \subsubsection{\fbox{実装課題}}
 
-2日目までに実装した仮想スタック機械コンパイラをPythonバイトコードへコンパイルします。まず、
-簡単なプログラムを利用してPythonバイトコードへ変換してみましょう。\verb|emit_pyc.ml| と
-\verb|assemble_pyc.ml| を用います。予め用意された \verb|assign.while| という While 言語プログラ
-ムを例としたときの、Pythonバイトコードのコンパイル手順は以下の通りです。
+2日目までに実装した仮想スタック機械コンパイラをWebAssembly中間表現へコンパイルします。まず、
+簡単なプログラムを利用して変換してみましょう。を用います。予め用意された
+\verb|assign.while| という While 言語プログラムを例としたときのコンパイル手順は
+以下の通りです。
 
 \begin{lstlisting}
 $ ./while_lang test/assign.while
@@ -730,78 +773,40 @@ $ ./while_lang test/assign.while
 $ .\bin\run.bat .\while_lang .\test\assign.while
 \end{lstlisting}
 
-すると、\verb|test/assign.pyc| というファイルが生成されます。この中には Pythonバイトコードの
-バイナリが含まれています。 \verb|assemble_pyc.py| で Python インタプリタで読み取れる表現
-に変換しているので、Python 2 インタプリタ (3 ではないので注意!) で実行できます。次のように
-実行してください。
+すると、\verb|test/assign.wat| というファイルが生成されます。この中には
+WebAssembly中間表現が含まれています。 テキスト表現になっているので、実際に読んで確
+認することができます。このファイルを実行する際は、
+\url{https://www.yuiza.org/wonline} を開き、\verb|test/assign.wat| をサイトにド
+ラッグ・アンド・ドロップするか、ボタンから読み込ませます。実行に成功すると、何らかの答えが返ってきます。
 
-\begin{lstlisting}
-$ ./interpret.py test/assign.pyc
-\end{lstlisting}
+\fbox{\textbf{実装課題}}では、 \verb|emit_wasm.ml| の実装済みのコードを参考に、未実装の演算
+や文の WebAssembly 命令への翻訳を行ってください。
+\verb|emit_wasm.ml| は簡単な演算や文ならコンパイルできますが、相変わらず演算や
+\verb|begin| -- \verb|end| 文が実装されていないので、それらを実装してください。
+実装した内容をレポートにまとめて提出してください。
 
-実行に成功すると、何らかの答えが返ってきます。
+% \subsubsection{\fbox{調査課題}}
 
-\fbox{\textbf{実装課題}}では、 \verb|emit_pyc.ml| の実装済みのコードを参考に、未実装の演算
-や文のPythonバイトコード命令への翻訳を行ってください。
-\verb|emit_pyc.py| は簡単な演算や文ならコンパイルできますが、相変わらず演算をや \verb|begin| --
-\verb|end| 文が実装されていないので、それらを実装してください。実装した内容をレポートにまとめて提
-出してください。
-
-\subsubsection{\fbox{調査課題}}
-
-\begin{itemize}
-\item 仮想スタックマシンの命令とPythonバイトコードの命令は、(ほぼ) 一対一に対応付けることができます。具
-  体的に、どの命令からどの命令へ翻訳すればよいか、\underline{次の3つ}に対し While言語
-  の仮想スタックマシン命令とPythonバイトコード命令への対応の仕方を説明してください。
-  \href{https://docs.python.org/ja/2.7/library/dis.html}{Pythonバイトコードの逆アセンブラ}
-  に Python の命令セットが書かれているので、よく読んで対応を探してください。
-  \begin{itemize}
-  \item \verb|BINARY| で始まる二項演算命令
-  \item \verb|STORE| あるいは \verb|LOAD| で始まる値の格納・読込命令
-  \item \verb|SETUP_LOOP|、\verb|JUMP_ABSOLUTE|、\verb|POP_JUMP_IF_FALSE|、
-    \verb|COMPARE_OP|、\verb|POP_BLOCK| 命令を用いるループ構造
-  \end{itemize}
-\item やり残した2日目の課題に取り組んで3日目のレポートに含めて報告してください。
-\end{itemize}
+% \begin{itemize}
+% \item 仮想スタックマシンの命令とPythonバイトコードの命令は、(ほぼ) 一対一に対応付けることができます。具
+%   体的に、どの命令からどの命令へ翻訳すればよいか、\underline{次の3つ}に対し While言語
+%   の仮想スタックマシン命令とPythonバイトコード命令への対応の仕方を説明してください。
+%   \href{https://docs.python.org/ja/2.7/library/dis.html}{Pythonバイトコードの逆アセンブラ}
+%   に Python の命令セットが書かれているので、よく読んで対応を探してください。
+%   \begin{itemize}
+%   \item \verb|BINARY| で始まる二項演算命令
+%   \item \verb|STORE| あるいは \verb|LOAD| で始まる値の格納・読込命令
+%   \item \verb|SETUP_LOOP|、\verb|JUMP_ABSOLUTE|、\verb|POP_JUMP_IF_FALSE|、
+%     \verb|COMPARE_OP|、\verb|POP_BLOCK| 命令を用いるループ構造
+%   \end{itemize}
+% \item やり残した2日目の課題に取り組んで3日目のレポートに含めて報告してください。
+% \end{itemize}
 
 \subsubsection{レポート}
 
-実装課題か調査課題に取り組み、レポートにまとめて提出してください。レポートにまとめる際、特
-に実装課題の場合、実行したWhile言語ソースコードと実行結果を含めることが望ましい。
-
-\subsubsection{演習室での実行方法}
-
-演習室の環境では、一般的な実行方法とはやり方が異なります。以下に簡単に整理します。
-コマンドプロンプト上で実行してください。
-
-\begin{lstlisting}
-cd compiler-day3
-
-# プロジェクトのセットアップ
-.\bin\setup.bat
-
-# プロジェクトのビルド
-.\bin\build.bat
-
-# ビルドファイルの消去 (成果物も削除される)
-.\bin\clean.bat
-
-# バイナリの実行
-.\bin\run.bat .\while_lang <path-to-while-lang-file>
-\end{lstlisting}
-
-\begin{lstlisting}
-cd compiler-day3
-
-# プロジェクトのビルド
-make
-
-# 中間ファイルの削除
-make clean
-
-# バイナリの実行
-./while_lang <path-to-while-lang-file> # while 言語プログラムファイルへのパス
-\end{lstlisting}
+3日目に取り組んだ課題をレポートにまとめて提出してください。まとめる際、
+特に実装課題の場合、実行したWhile言語ソースコードと実行結果を含めることが望まし
+い。実行結果はスクリーンショットや Web のコピーアンドペーストで構いません。
 
 \newpage
 \section{ocamllex/ocamlyacc入門}
@@ -985,20 +990,18 @@ semantic-action は任意の OCaml の式です。この式は定義される非
 (数字) でアクセス出来ます。\$1 で第一シンボル (もっとも左) の属性に、\$2 で第二シンボルに、
 という具合です。
 
-\newpage
-\section{Pythonバイトコードを調べる上での資料}
+% \newpage
+% \section{Pythonバイトコードを調べる上での資料}
 
-\begin{itemize}
-\item
-  「\href{https://docs.python.org/ja/2.7/library/dis.html}{Pythonバイトコードの逆アセンブ
-    ラ}」、Python公式ドキュメント
-\item
-
-
-  「\href{https://github.com/python/cpython/blob/main/Include/opcode_ids.h}{opcode\_ids.h}」、CPython
-\end{itemize}
+% \begin{itemize}
+% \item
+%   「\href{https://docs.python.org/ja/2.7/library/dis.html}{Pythonバイトコードの逆アセンブ
+%     ラ}」、Python公式ドキュメント
+% \item
 
 
+%   「\href{https://github.com/python/cpython/blob/main/Include/opcode_ids.h}{opcode\_ids.h}」、CPython
+% \end{itemize}
 
 \section{参考文献}
 
